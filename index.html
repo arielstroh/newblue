@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NewBlue — Live Broadcast Graphics</title>
+<style>
+  :root{
+    --bg:#0a0e1a; --bg2:#0f1626; --panel:#131c30; --panel2:#18233d;
+    --line:#243352; --ink:#eaf1ff; --muted:#9db0d4; --dim:#6b7ea6;
+    --brand:#2e8bff; --brand2:#00d0ff; --accent:#5b6cff; --good:#28d3a0; --warn:#ff5d6c;
+    --grad:linear-gradient(135deg,#2e8bff 0%,#00d0ff 100%);
+    --radius:16px; --shadow:0 20px 60px rgba(0,0,0,.45);
+    --maxw:1200px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:radial-gradient(1200px 700px at 80% -10%,#16233f 0%,var(--bg) 55%) fixed,var(--bg);
+    color:var(--ink); line-height:1.55; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);background:rgba(10,14,26,.78);
+    border-bottom:1px solid var(--line);
+  }
+  .bar{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;gap:18px;
+    padding:14px 22px}
+  .brand-logo{height:40px;width:auto;flex-shrink:0}
+  .partner-logo{height:36px;width:auto;flex-shrink:0;opacity:.95;margin-left:4px}
+  nav{display:flex;gap:4px;margin-left:14px;flex:1;flex-wrap:wrap}
+  nav button{
+    background:transparent;border:0;color:var(--muted);font:inherit;font-weight:600;
+    font-size:15px;padding:9px 14px;border-radius:10px;cursor:pointer;transition:.18s;white-space:nowrap}
+  nav button:hover{color:var(--ink);background:var(--panel)}
+  nav button.active{color:#fff;background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line)}
+  .lang{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  .lang button{background:transparent;border:0;color:var(--muted);font:inherit;font-weight:700;
+    font-size:13px;padding:8px 12px;cursor:pointer;transition:.15s}
+  .lang button.active{background:var(--grad);color:#03203f}
+
+  /* ---------- Layout ---------- */
+  main{max-width:var(--maxw);margin:0 auto;padding:34px 22px 90px}
+  .page{display:none;animation:fade .45s ease}
+  .page.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .eyebrow{color:var(--brand2);font-weight:800;letter-spacing:2px;font-size:12px;text-transform:uppercase}
+  h1{font-size:clamp(30px,4.4vw,52px);line-height:1.08;letter-spacing:-1px;margin:10px 0 14px;font-weight:850}
+  h2{font-size:clamp(22px,2.8vw,32px);letter-spacing:-.5px;margin:0 0 6px;font-weight:800}
+  h3{font-size:19px;font-weight:750;margin:0 0 6px}
+  .lead{font-size:clamp(16px,1.9vw,20px);color:var(--muted);max-width:70ch}
+  .section{margin-top:44px}
+  .grad-txt{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---------- Buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:8px;font:inherit;font-weight:750;font-size:16px;
+    padding:13px 22px;border-radius:12px;cursor:pointer;border:0;transition:.18s;background:var(--grad);
+    color:#03203f;box-shadow:0 10px 26px rgba(46,139,255,.35)}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(46,139,255,.5)}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+  .btn.ghost:hover{background:var(--panel);box-shadow:inset 0 0 0 1.5px var(--brand)}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+
+  /* ---------- Cards & grid ---------- */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .card{background:linear-gradient(180deg,var(--panel) 0%,var(--bg2) 100%);
+    border:1px solid var(--line);border-radius:var(--radius);padding:22px;transition:.2s}
+  .card:hover{border-color:var(--brand);transform:translateY(-3px);box-shadow:var(--shadow)}
+  .card .ico{width:46px;height:46px;border-radius:11px;background:var(--panel2);display:grid;place-items:center;
+    font-size:24px;margin-bottom:14px;box-shadow:inset 0 0 0 1px var(--line)}
+  .card p{color:var(--muted);font-size:15px}
+  .tag{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.4px;padding:4px 10px;border-radius:99px;
+    background:rgba(46,139,255,.15);color:var(--brand2);border:1px solid rgba(46,139,255,.35);margin-bottom:12px}
+
+  /* ---------- Hero ---------- */
+  .hero{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line);
+    background:linear-gradient(120deg,#0d1730 0%,#0a0e1a 60%);padding:48px}
+  .hero .glow{position:absolute;inset:auto -10% -40% auto;width:520px;height:520px;
+    background:radial-gradient(circle,rgba(0,208,255,.28),transparent 60%);filter:blur(20px);pointer-events:none}
+  .hero-inner{position:relative;max-width:760px}
+  .pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+  .pill{font-size:13px;font-weight:700;color:var(--muted);padding:8px 14px;border:1px solid var(--line);
+    border-radius:99px;background:rgba(255,255,255,.02)}
+  .stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:34px}
+  .stat b{display:block;font-size:30px;font-weight:850}
+  .stat span{color:var(--dim);font-size:13px;font-weight:600}
+  .hero-art{position:absolute;right:34px;top:50%;transform:translateY(-50%);width:360px;max-width:36%;opacity:.95;pointer-events:none}
+  .hero-art .bar{transform-box:fill-box;transform-origin:bottom;animation:barpulse 2.6s ease-in-out infinite}
+  @keyframes barpulse{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+  @media(max-width:860px){.hero-art{display:none}}
+
+  /* "any production" spectrum + use-case tiles */
+  .scale-bar{display:flex;align-items:center;gap:14px;margin:18px 0 22px}
+  .scale-bar span{font-size:12.5px;font-weight:800;letter-spacing:.4px;color:var(--muted);white-space:nowrap;text-transform:uppercase}
+  .scale-bar i{flex:1;height:6px;border-radius:3px;background:linear-gradient(90deg,#5b6cff,#2e8bff,#00d0ff)}
+  .uc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+  .usecase{display:flex;gap:13px;background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:16px;transition:.2s}
+  .usecase:hover{border-color:var(--brand);transform:translateY(-2px)}
+  .usecase .uc-ic{width:44px;height:44px;flex-shrink:0;border-radius:11px;background:var(--panel2);display:grid;place-items:center;font-size:22px;box-shadow:inset 0 0 0 1px var(--line)}
+  .usecase h3{font-size:15px;margin:0 0 3px}
+  .usecase p{color:var(--muted);font-size:13px;margin:0;line-height:1.45}
+
+  /* home image gallery */
+  .shots{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+  @media(max-width:800px){.shots{grid-template-columns:1fr}}
+  .shot{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,var(--panel),var(--bg2));aspect-ratio:16/10}
+  .shot img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+  .shot.hw{background:linear-gradient(180deg,#e9eef6,#cdd9ea)}
+  .shot.hw img{object-fit:contain;padding:18px}
+  .shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:12px 13px;font-size:12.5px;font-weight:650;color:#fff;background:linear-gradient(0deg,rgba(5,7,14,.9),rgba(5,7,14,0))}
+  .shot.ph img{display:none}
+  .shot.ph:before{content:attr(data-ph);position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:16px;color:var(--dim);font-size:13px;font-weight:600}
+
+  /* ---------- Video ---------- */
+  .video{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#05070e;aspect-ratio:16/9}
+  .video video{width:100%;height:100%;object-fit:cover;display:block}
+  .video .poster{position:absolute;inset:0;display:grid;place-items:center;cursor:pointer;
+    background:linear-gradient(135deg,#12203c,#0a0e1a);text-align:center}
+  .video .poster .play{width:74px;height:74px;border-radius:50%;background:var(--grad);display:grid;place-items:center;
+    font-size:30px;color:#03203f;box-shadow:0 12px 30px rgba(0,208,255,.5);margin-bottom:10px;transition:.2s}
+  .video .poster:hover .play{transform:scale(1.08)}
+  .video .poster small{color:var(--dim);font-weight:600}
+  .video .poster .lbl{color:var(--muted);font-weight:700;font-size:15px;margin-top:4px}
+
+  /* ---------- Architecture toggle ---------- */
+  .switch{display:inline-flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:5px;gap:5px;margin:8px 0 26px}
+  .switch button{background:transparent;border:0;color:var(--muted);font:inherit;font-weight:750;font-size:15px;
+    padding:11px 20px;border-radius:9px;cursor:pointer;transition:.18s}
+  .switch button.active{background:var(--grad);color:#03203f}
+  .arch{display:none}.arch.show{display:block;animation:fade .4s ease}
+  .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
+  .node{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center}
+  .node .ni{font-size:26px;margin-bottom:8px}
+  .node b{display:block;margin-bottom:2px}
+  .node small{color:var(--dim);font-size:12.5px}
+  .arrow{display:grid;place-items:center;color:var(--brand2);font-size:26px;padding:0 6px;font-weight:800}
+  .node.hl{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand),0 12px 30px rgba(46,139,255,.25);
+    background:linear-gradient(180deg,#14233f,#0f1830)}
+
+  /* ---------- Pricing ---------- */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .price{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:26px;position:relative}
+  .price.feat{border-color:var(--brand);box-shadow:0 20px 50px rgba(46,139,255,.22)}
+  .price.feat:before{content:attr(data-badge);position:absolute;top:-12px;left:50%;transform:translateX(-50%);
+    background:var(--grad);color:#03203f;font-size:12px;font-weight:800;padding:5px 14px;border-radius:99px;white-space:nowrap}
+  .price .amt{font-size:38px;font-weight:850;margin:8px 0 2px}
+  .price .amt small{font-size:15px;color:var(--dim);font-weight:600}
+  .price ul{list-style:none;margin:16px 0 20px;display:grid;gap:9px}
+  .price li{color:var(--muted);font-size:14.5px;padding-left:24px;position:relative}
+  .price li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:900}
+  .note{color:var(--dim);font-size:13px;margin-top:18px}
+  .hw-img{width:100%;height:auto;margin-bottom:12px;background:transparent}
+  .incl-banner{margin-top:14px;padding:12px 16px;border:1px solid var(--brand);border-radius:12px;
+    background:rgba(46,139,255,.1);color:var(--ink);font-size:14.5px;font-weight:600}
+  .price li.incl{color:var(--brand2);font-weight:700}
+  .price li.incl:before{content:"★";color:var(--brand2)}
+
+  /* ---------- Comparison ---------- */
+  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:10px;font-size:15px;table-layout:fixed}
+  th,td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top;word-wrap:break-word;overflow-wrap:break-word}
+  thead th{font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--dim)}
+  thead th:nth-child(2){color:var(--brand2)}
+  /* fixed, consistent column widths across every comparison table:
+     col 1 = 24% (30% narrower than the old 34%), cols 2 & 3 equal at 38% */
+  thead th:first-child,tbody td:first-child{width:24%}
+  thead th:nth-child(2),thead th:nth-child(3),tbody td:nth-child(2),tbody td:nth-child(3){width:38%}
+  tbody td:first-child{font-weight:700;color:var(--ink)}
+  .yn{font-weight:800}.y{color:var(--good)}.n{color:var(--warn)}
+  td.nb{background:rgba(46,139,255,.06)}
+  tr:last-child td{border-bottom:0}
+  .cmp-wrap{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+
+  /* ---------- Contact ---------- */
+  .contact-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:22px}
+  .field{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--line);border-radius:13px;background:var(--panel);margin-bottom:12px}
+  .field .fi{width:42px;height:42px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-size:20px;flex-shrink:0}
+  .field b{display:block;font-size:15px}.field span{color:var(--muted);font-size:14px}
+  .qr{background:#fff;border-radius:16px;padding:20px;text-align:center;color:#0a0e1a}
+  .qr .box{width:180px;height:180px;margin:0 auto 12px;background:
+    repeating-conic-gradient(#0a0e1a 0% 25%,#fff 0% 50%) 0 0/22px 22px;border-radius:8px;opacity:.9}
+  .qr b{color:#0a0e1a;font-size:15px}.qr span{color:#4a5a78;font-size:13px}
+
+  .catalog-frame{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;height:80vh}
+  .catalog-frame iframe{width:100%;height:100%;border:0;display:block}
+
+  /* comparison chips + demo buttons */
+  .chip{display:inline-flex;align-items:center;gap:6px;font:inherit;font-weight:750;font-size:12.5px;
+    padding:6px 11px;border-radius:99px;border:1px solid var(--brand);background:rgba(46,139,255,.12);
+    color:var(--brand2);cursor:pointer;transition:.15s}
+  .chip:hover{background:var(--brand);color:#03203f}
+  .demo-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  td.nb .yn.y{margin-right:2px}
+
+  /* video modal */
+  .vmodal{position:fixed;inset:0;z-index:100;background:rgba(3,6,14,.9);backdrop-filter:blur(6px);
+    display:none;place-items:center;padding:24px}
+  .vmodal.show{display:grid}
+  .vmodal-box{position:relative;width:min(1000px,94vw);background:#05070e;border:1px solid var(--line);
+    border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .vmodal-box video{width:100%;display:block;aspect-ratio:16/9;background:#000}
+  .vmodal-x{position:absolute;top:10px;right:10px;z-index:2;width:42px;height:42px;border-radius:50%;
+    border:0;background:rgba(0,0,0,.6);color:#fff;font-size:18px;cursor:pointer}
+  .vmodal-x:hover{background:var(--brand)}
+  .vmodal-msg{padding:40px 24px;color:var(--muted);font-size:15px;text-align:center;display:none}
+
+  /* newsroom interactive diagram */
+  .nsr{margin-top:22px}
+  .nsr-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .nsr-zone,.nsr-band{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:14px;padding:14px}
+  .nsr-band{margin-top:14px}
+  .nsr-zh{font-size:12px;font-weight:800;letter-spacing:1.4px;color:var(--brand2);text-transform:uppercase;margin-bottom:11px}
+  .nsr-zh span{display:block;font-size:11px;font-weight:600;letter-spacing:.2px;color:var(--dim);text-transform:none;margin-top:3px}
+  .nsr-node{display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;font-weight:650;font-size:14px;
+    color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:.15s}
+  .nsr-node:last-child{margin-bottom:0}
+  .nsr-node:hover{border-color:var(--brand);background:#17233f;transform:translateY(-1px)}
+  .nsr-node .q{margin-left:auto;color:var(--brand2);font-weight:800;opacity:.7}
+  .nsr-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:9px}
+  .nsr-row .nsr-node{margin-bottom:0}
+  .nsr-legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .nsr-legend span{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+  .nsr-legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
+  @media(max-width:900px){.nsr-cols{grid-template-columns:1fr}}
+  /* real SVG diagram + clickable hotspot overlay */
+  .nsr-wrap{position:relative;width:100%;margin:22px auto 0;border:1px solid var(--line);border-radius:14px;background:#fff}
+  .nsr-wrap img{display:block;width:100%;height:auto;border-radius:13px}
+  .nsr-hot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:6px;padding:0;transition:.12s}
+  .nsr-hot:hover,.nsr-hot:focus{background:rgba(46,139,255,.22);box-shadow:inset 0 0 0 2px var(--brand);outline:none}
+  .nsr-hint{color:var(--dim);font-size:13px;text-align:center;margin-top:12px}
+  .nsr-pop{position:absolute;z-index:20;width:280px;max-width:72vw;background:linear-gradient(180deg,var(--panel),var(--bg2));
+    border:1px solid var(--brand);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow);pointer-events:none;opacity:0;display:none}
+  .nsr-pop.show{display:block;opacity:1}
+  .nsr-pop b{display:block;font-size:15px;margin-bottom:6px;color:var(--ink)}
+  .nsr-pop span{color:var(--muted);font-size:13px;line-height:1.5}
+
+  /* component info popup */
+  .imodal{position:fixed;inset:0;z-index:100;background:rgba(3,6,14,.82);backdrop-filter:blur(5px);display:none;place-items:center;padding:24px}
+  .imodal.show{display:grid}
+  .imodal-box{position:relative;width:min(440px,92vw);background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--brand);border-radius:16px;padding:24px;box-shadow:var(--shadow)}
+  .imodal-box h3{font-size:20px;display:flex;align-items:center;gap:10px;margin-bottom:10px;padding-right:30px}
+  .imodal-box p{color:var(--muted);font-size:15px;line-height:1.6}
+  .imodal-x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:var(--panel2);color:var(--muted);font-size:15px;cursor:pointer}
+  .imodal-x:hover{color:#fff;background:var(--brand)}
+  .imodal-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase;color:var(--dim);margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+
+  footer{border-top:1px solid var(--line);margin-top:70px;padding:26px 22px;text-align:center;color:var(--dim);font-size:13px}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:900px){
+    .g3,.price-grid{grid-template-columns:1fr}
+    .g2,.contact-grid{grid-template-columns:1fr}
+    .hero{padding:32px}
+    nav{order:3;width:100%;margin-left:0}
+    .arrow{transform:rotate(90deg);padding:6px 0}
+    .node{min-width:100%}
+  }
+  @media(min-width:901px)and(max-width:1100px){.g3{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <img class="brand-logo" src="images/newblue.png" alt="NewBlue">
+    <nav id="nav"></nav>
+    <div class="lang" id="lang">
+      <button data-l="en" class="active">EN</button>
+      <button data-l="pt">PT</button>
+      <button data-l="es">ES</button>
+    </div>
+    <img class="partner-logo" src="images/popup.png" alt="PopUp Media">
+  </div>
+</header>
+
+<main id="app"><div style="padding:60px 22px;text-align:center;color:#9db0d4;font-size:15px;line-height:1.6">Loading…<br><span style="font-size:13px;color:#6b7ea6">If this message stays, open <b>index.html</b> directly in Safari. Copy the whole folder to the iPad first (not the OneDrive app preview).</span></div></main>
+<noscript><div style="padding:60px 22px;text-align:center;color:#eaf1ff">This presentation needs JavaScript. Please open <b>index.html</b> in Safari on the iPad rather than a file-preview.</div></noscript>
+
+<div id="vmodal" class="vmodal" onclick="closeVideo(event)">
+  <div class="vmodal-box">
+    <button class="vmodal-x" onclick="closeVideo(event,true)">✕</button>
+    <video id="vmodal-vid" controls playsinline></video>
+    <div id="vmodal-msg" class="vmodal-msg"></div>
+  </div>
+</div>
+
+<div id="imodal" class="imodal" onclick="closeNode(event)">
+  <div class="imodal-box">
+    <button class="imodal-x" onclick="closeNode(event,true)">✕</button>
+    <h3 class="imodal-h"></h3>
+    <p class="imodal-p"></p>
+    <span class="imodal-tag">NewBlue · Newsroom Ecosystem</span>
+  </div>
+</div>
+
+<footer id="footer"></footer>
+
+<script>
+/* =====================================================================
+   NewBlue Marketing Package — offline trilingual site
+   All content lives in CONTENT[lang]. Placeholder copy = [PLACEHOLDER].
+   Replace with final brief content. Videos: /videos ; images: /images
+   ===================================================================== */
+
+const CONTENT = {
+  en:{
+    nav:{home:"Home",products:"Products",arch:"Architecture",pricing:"Pricing",catalog:"Catalog",vs:"NewBlue vs HTML",contact:"Contact"},
+    footer:"NewBlue — Real-time graphics for live production, made easy and affordable.",
+    catalogPage:{eyebrow:"Template catalog",h1:"Browse the template library",lead:"Explore NewBlue's ready-to-use graphics templates — search, filter and preview hundreds of designs. [PLACEHOLDER intro line.]"},
+    home:{
+      eyebrow:"Real-time, data-driven graphics",
+      h1:"Turn your data into live, on-air graphics",
+      lead:"NewBlue powers dynamic, data-driven graphics for live production. Bind lower thirds, tickers, leaderboards and full-screen motion to spreadsheets, feeds and live data — then update them on air, in real time. From a single editor's timeline to a full newsroom, made easy and affordable.",
+      cta1:"Explore products",cta2:"Watch the demo",
+      pills:["Data-driven graphics","Real-time live control","Spreadsheet & live-feed binding","SDI / NDI / ST 2110"],
+      stats:[["16","Channels of live graphics"],["4,000+","Templates included"],["4K","UHD ready"]],
+      videoLabel:"See NewBlue in action — tap to play",
+      scaleTitle:"One platform for any production",
+      scaleLead:"Whether it's a simple digital stream or a complex, multi-channel newsroom, NewBlue scales to fit — the same look and tools, growing with you.",
+      scaleSimple:"Simple digital",
+      scaleComplex:"Complex newsroom",
+      scaleItems:[
+        ["🎥","Creators & streamers","One laptop, one stream — live titles and lower thirds."],
+        ["⛪","Corporate & worship","IMAG, lyrics and lower thirds for events and services."],
+        ["🏆","Live sports","Data-driven scoreboards and leaderboards that update live."],
+        ["🗞️","News & newsroom","A full NRCS-integrated pipeline across many channels."]
+      ],
+      galleryTitle:"See it on screen",
+      shots:["Data-driven live graphics","NewBlue Fusion hardware","Newsroom & sports in action"],
+      whyTitle:"Why NewBlue",
+      why:[
+        ["📊","Data-driven graphics","Bind graphics to spreadsheets, live feeds and data sources — scoreboards, leaderboards and tickers update automatically as the data changes."],
+        ["⚡","Real-time & live","Hardware-accelerated rendering and live control built for on-air pressure. Make changes on the fly, across up to 16 channels in 4K."],
+        ["🧩","Live and post","One family across live graphics (Captivate, Fusion) and video editing (Total FX) — the same polished look on air and in the timeline."],
+        ["💸","Easy & affordable","Powerful broadcast graphics without the complexity or the price tag — perpetual or subscription licensing, plus turnkey Fusion hardware."]
+      ]
+    },
+    products:{
+      eyebrow:"The product line",
+      h1:"Software and hardware for live graphics",
+      lead:"From a single editor's timeline to a full newsroom on air — NewBlue spans creative software, integrated newsroom workflows and turnkey hardware.",
+      items:[
+        ["📺","NewBlue Captivate","Real-time broadcast graphics platform","The flagship live graphics application. Build and play data-driven lower thirds, tickers, crawls, scoreboards and full-screen motion in real time — bind graphics to spreadsheets, feeds and live data, control everything live, and output to SDI, NDI or ST 2110. Thousands of editable templates included.",["Real-time, data-driven graphics","Live control & automation","4,000+ templates included","SDI / NDI / ST 2110 output"]],
+        ["✨","NewBlue Total FX","Titles, transitions & effects for editors","A complete collection of titling, transition and video-effect plugins for the major non-linear editors. Add polished lower thirds, motion titles, transitions and looks right in your timeline — hundreds of fully customizable presets.",["Titles & lower thirds","Transitions & video effects","Hundreds of presets","Plugin for Premiere, DaVinci Resolve, After Effects, Avid & Edius"]],
+        ["🗞️","NewBlue Newsroom","End-to-end newsroom graphics ecosystem","An integrated pipeline connecting design, journalists, control room and playout. Reporters fill brand-locked templates from inside their NRCS (iNEWS, ENPS and more) over MOS/API, operators drive graphics live from any browser, and centralized engines render to air across multiple channels.",["NRCS / MOS integration","Browser-based rundown control","Brand-locked templates (Stencil)","Multi-channel, redundant playout"]],
+        ["🖥️","NewBlue Fusion","Turnkey on-air graphics appliances","Purpose-built hardware with Captivate pre-installed — plug in and go on air. Five variants match your signal chain: Fusion NDI, Fusion SDI and Fusion 2110 for HD, plus Fusion Extreme 4K SDI and Fusion Extreme 4K 2110 for UHD/4K. Every unit includes a Captivate perpetual license and the first 12 months of support and upgrades.",["Turnkey hardware + software","Variants: NDI, SDI, ST 2110","4K/UHD: Extreme 4K SDI & 4K 2110","Includes Captivate license + 12 mo support"]]
+      ]
+    },
+    arch:{
+      eyebrow:"System architecture",
+      h1:"Two ways to deploy",
+      lead:"NewBlue scales from a single machine to a fully integrated newsroom ecosystem. Toggle to compare.",
+      opt1:"Standalone",opt2:"Newsroom ecosystem",
+      diagramHint:"Hover a component for a quick summary, or tap it for full details.",
+      standalone:{
+        title:"Standalone deployment",
+        desc:"A self-contained setup: one operator, one machine, graphics to air. Ideal for streamers, houses of worship, corporate AV and smaller live productions. [PLACEHOLDER — confirm technical details.]",
+        flow:[["🎛️","Operator / Control","Live control panel"],["💻","NewBlue Engine","Renders graphics"],["📤","Output","To switcher / stream"]],
+        points:["Fast to deploy, minimal infrastructure","Runs on a single workstation","Manual or template-driven control","Perfect for single-channel productions"]
+      },
+      newsroom:{
+        title:"Newsroom ecosystem",
+        desc:"NewBlue integrated into a full production pipeline — data sources, newsroom computer systems (NRCS), MAM and multi-channel playout — all feeding live graphics automatically. [PLACEHOLDER — confirm integrations.]",
+        flow:[["🗂️","Data & NRCS","Rundowns, feeds, MAM"],["🧠","NewBlue Server","Central graphics engine"],["🎛️","Operators","Multiple control clients"],["📡","Multi-channel","Playout to air"]],
+        points:["Integrates with newsroom (NRCS) rundowns","Centralized, data-driven automation","Scales to multiple channels & operators","Enterprise reliability and redundancy"]
+      }
+    },
+    pricing:{
+      eyebrow:"Pricing",
+      h1:"Software and hardware, priced your way",
+      lead:"NewBlue software is available as a perpetual license or a subscription. Fusion hardware ships as turnkey on-air appliances with a one-time price.",
+      currency:"USD",
+      models:{perp:"Perpetual license",sub:"Subscription"},
+      swHeading:"Software",
+      swSub:"Perpetual or subscription licensing",
+      hwHeading:"Hardware — Fusion appliances",
+      hwSub:"Turnkey on-air graphics — one-time purchase",
+      hwIncludes:"Every Fusion appliance includes a NewBlue Captivate perpetual license plus the first 12 months of support and upgrades.",
+      hwIncludeBullets:["Captivate perpetual license included","First 12 months of support & upgrades"],
+      perpNote:"One-time purchase — own the license.",
+      subNote:"Monthly price, billed annually.",
+      cta:"Contact sales",
+      software:[
+        {name:"NewBlue Captivate",desc:"Flagship real-time, data-driven broadcast graphics platform.",featured:true,badge:"Most popular",
+          perp:{price:"$4,999",term:"one-time"}, sub:{price:"$166",term:"/mo, billed annually"},
+          features:["Real-time data-driven graphics","Live control & automation","Templates included"]},
+        {name:"NewBlue Total FX",desc:"Titles, transitions and video effects toolset.",featured:false,badge:"",
+          perp:{price:"$799",term:"one-time"}, sub:{price:"$24",term:"/mo, billed annually"},
+          features:["Titles & lower thirds","Transitions & effects","Plugin for major NLEs: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]},
+        {name:"NewBlue Newsroom",desc:"End-to-end newsroom graphics ecosystem, sized to your facility.",featured:false,badge:"",
+          perp:{price:"Quote",term:"tailored deployment"}, sub:{price:"Quote",term:"tailored deployment"},
+          features:["NRCS / MOS integration","Multi-channel & multi-operator","Enterprise support & SLA"]}
+      ],
+      hardware:[
+        {name:"Fusion NDI",desc:"Turnkey on-air graphics — NDI I/O.",price:"$11,995",term:"one-time",features:["Turnkey hardware + software","NDI in/out","On-air ready"]},
+        {name:"Fusion SDI",desc:"Turnkey on-air graphics — SDI I/O.",price:"$14,995",term:"one-time",features:["Turnkey hardware + software","SDI in/out","On-air ready"]},
+        {name:"Fusion 2110",desc:"Turnkey on-air graphics — ST 2110 IP.",price:"$15,995",term:"one-time",features:["Turnkey hardware + software","ST 2110 IP","On-air ready"]},
+        {name:"Fusion Extreme 4K SDI",desc:"4K turnkey on-air graphics — SDI I/O.",price:"$18,995",term:"one-time",features:["4K / UHD","SDI in/out","High-performance engine"]},
+        {name:"Fusion Extreme 4K 2110",desc:"4K turnkey on-air graphics — ST 2110 IP.",price:"$19,495",term:"one-time",features:["4K / UHD","ST 2110 IP","High-performance engine"]}
+      ],
+      note:"Prices in USD. Subscription shows the monthly price, billed annually. NewBlue Newsroom is quoted per deployment. Volume and regional pricing available on request."
+    },
+    vs:{
+      eyebrow:"NewBlue vs HTML graphics",
+      h1:"NewBlue Captivate vs HTML5 / Cloud CG",
+      lead:"A capability-by-capability comparison of a purpose-built broadcast graphics engine against browser-based HTML5 / Cloud character generators.",
+      colB:"NewBlue Captivate", colC:"HTML5 / Cloud CG",
+      groups:[
+        {title:"Capabilities & Workflows", rows:[
+          {f:"Template catalog", nb:"More than 4,000 templates included.", catalog:true, html:"Up to 150 templates included."},
+          {f:"Photoshop project import", nb:"Natively imports .psd files with layers.", demos:[{label:"Demo",src:"psd-import.mp4"}], html:"No import of any graphics — every project must be rebuilt in the platform."},
+          {f:"Direct Adobe After Effects", nb:"Import .aep, .mogrt or .psd files straight into the local title designer for real-time live data mapping — bypassing web-asset conversions.", demos:[{label:"Demo",src:"ae-import.mp4"}], html:"No import of any graphics — every project must be rebuilt in the platform."},
+          {f:"Local spreadsheet / file playout", nb:"Robust local processing for offline CSV/XLSX spreadsheets and local media sequencing — no continuous cloud connection required.", demos:[{label:"Demo",src:"spreadsheet-playout.mp4"}], html:""},
+          {f:"Spreadsheet as data source", nb:"Local or cloud.", html:"Cloud only."},
+          {f:"PTZ camera control", nb:"Operators manage camera movement, focus and preset angles from inside the production interface.", html:""},
+          {f:"Direct NDI / HDMI multi-video ingest & playout", nb:"Ingests local NDI, SDI, ST 2110, SRT, WebRTC, OMT, HDMI and USB feeds directly into local compositions — no browser capture layer.", html:""},
+          {f:"HTML5 graphics ingest", nb:"Captivate can ingest HTML5 / Cloud graphics as a source.", html:""},
+          {f:"True 3D environments & geometries", nb:"Built-in 3D graphic design interface with true Z-axis rotation, 3D extrusions, lighting and reflections.", html:"Limited to flat 2D web standards (HTML, CSS, SVG and 2D canvas layers)."},
+          {f:"AI assistant (incl. Portuguese)", nb:"Built-in natural-language AI chat for live support.", html:""}
+        ]},
+        {title:"Switching, Social Media & Video Playback", rows:[
+          {f:"Live video / audio switching", nb:"Native switching between physical live sources (SDI, NDI, HDMI, USB, etc.) with built-in transitions such as wipes.", html:""},
+          {f:"Squeezes", nb:"Squeeze-back with perfectly synchronized L/J-bar deploy and multi-zone control.", demos:[{label:"FedEx",src:"squeeze-fedex.mp4"},{label:"Coca-Cola",src:"squeeze-cocacola.mp4"}], html:""},
+          {f:"Video playback", nb:"Play video — social-media clips or playlists of local video.", demos:[{label:"Demo",src:"video-playback.mp4"}], html:""},
+          {f:"Local audio mixing", nb:"Internal audio mixer to handle and animate live audio inputs alongside clip playback.", html:""}
+        ]},
+        {title:"Graphics & Animation", rows:[
+          {f:"Smooth hardware-based animation", nb:"Local workflow renders smooth animation and movement — no jumpy HTML5 crawl on tickers.", html:""},
+          {f:"Credit rolls", nb:"Rolls such as credits at intro or outro.", html:""},
+          {f:"NLE integration", nb:"Integrates with major post platforms: Adobe Premiere Pro, DaVinci Resolve, GV Edius and Avid Media Composer.", html:""}
+        ]}
+      ],
+      featureCol:"Feature",
+      viewCatalog:"View catalog →",
+      close:"The bottom line: HTML5 / Cloud CG hides its real cost in developer time and a browser you can't fully trust on air. NewBlue is built for live from the ground up."
+    },
+    contact:{
+      eyebrow:"Contact us",
+      h1:"Let's talk about your production",
+      lead:"Reach out for a live demo, pricing, or a tailored deployment plan. [PLACEHOLDER — replace with the BD director's real contact details.]",
+      fields:[
+        ["👤","Business Development","[Name] — [Title]"],
+        ["✉️","Email","[email@newbluefx.com]"],
+        ["📞","Phone / WhatsApp","[+00 000 000 0000]"],
+        ["🌐","Website","newbluefx.com"],
+        ["📍","Meet us","SET Expo — Brazil"]
+      ],
+      qrTitle:"Scan to save contact",
+      qrSub:"Works offline — encodes contact details",
+      cta:"Request a live demo"
+    }
+  }
+};
+
+/* ---------- Portuguese (PT-BR) ---------- */
+CONTENT.pt = {
+  nav:{home:"Início",products:"Produtos",arch:"Arquitetura",pricing:"Preços",catalog:"Catálogo",vs:"NewBlue vs HTML",contact:"Contato"},
+  footer:"NewBlue — Gráficos em tempo real para produção ao vivo, fáceis e acessíveis.",
+  catalogPage:{eyebrow:"Catálogo de templates",h1:"Explore a biblioteca de templates",lead:"Explore os templates gráficos prontos para uso da NewBlue — pesquise, filtre e visualize centenas de designs. [PLACEHOLDER introdução.]"},
+  home:{
+    eyebrow:"Gráficos em tempo real, orientados a dados",
+    h1:"Transforme seus dados em gráficos ao vivo no ar",
+    lead:"A NewBlue gera gráficos dinâmicos e orientados a dados para produção ao vivo. Vincule geradores de caracteres, tickers, leaderboards e telas cheias a planilhas, feeds e dados ao vivo — e atualize tudo no ar, em tempo real. Da timeline de um único editor a uma redação inteira, de forma fácil e acessível.",
+    cta1:"Ver produtos",cta2:"Assistir demonstração",
+    pills:["Gráficos orientados a dados","Controle ao vivo em tempo real","Vínculo com planilhas e feeds ao vivo","SDI / NDI / ST 2110"],
+    stats:[["16","Canais de gráficos ao vivo"],["4.000+","Templates incluídos"],["4K","Pronto para UHD"]],
+    videoLabel:"Veja a NewBlue em ação — toque para reproduzir",
+    scaleTitle:"Uma plataforma para qualquer produção",
+    scaleLead:"Seja um simples stream digital ou uma redação complexa e multicanal, a NewBlue se adapta — o mesmo visual e as mesmas ferramentas, crescendo com você.",
+    scaleSimple:"Digital simples",
+    scaleComplex:"Redação complexa",
+    scaleItems:[
+      ["🎥","Criadores e streamers","Um notebook, um stream — títulos e geradores de caracteres ao vivo."],
+      ["⛪","Corporativo e igrejas","IMAG, letras e geradores de caracteres para eventos e cultos."],
+      ["🏆","Esportes ao vivo","Placares e leaderboards orientados a dados que se atualizam ao vivo."],
+      ["🗞️","Jornalismo e redação","Um pipeline completo integrado ao NRCS em vários canais."]
+    ],
+    galleryTitle:"Veja na tela",
+    shots:["Gráficos ao vivo orientados a dados","Hardware NewBlue Fusion","Redação e esportes em ação"],
+    whyTitle:"Por que NewBlue",
+    why:[
+      ["📊","Gráficos orientados a dados","Vincule gráficos a planilhas, feeds ao vivo e fontes de dados — placares, leaderboards e tickers se atualizam automaticamente conforme os dados mudam."],
+      ["⚡","Tempo real e ao vivo","Renderização acelerada por hardware e controle ao vivo, feitos para a pressão do ao vivo. Faça mudanças na hora, em até 16 canais e 4K."],
+      ["🧩","Ao vivo e pós","Uma família única entre gráficos ao vivo (Captivate, Fusion) e edição de vídeo (Total FX) — o mesmo visual impecável no ar e na timeline."],
+      ["💸","Fácil e acessível","Gráficos de broadcast poderosos sem a complexidade nem o preço alto — licenciamento perpétuo ou por assinatura, além do hardware turnkey Fusion."]
+    ]
+  },
+  products:{
+    eyebrow:"A linha de produtos",
+    h1:"Software e hardware para gráficos ao vivo",
+    lead:"Da timeline de um único editor a uma redação inteira no ar — a NewBlue abrange software criativo, fluxos de trabalho integrados de redação e hardware turnkey.",
+    items:[
+      ["📺","NewBlue Captivate","Plataforma de gráficos de broadcast em tempo real","O aplicativo carro-chefe de gráficos ao vivo. Crie e reproduza geradores de caracteres, tickers, crawls, placares e telas cheias orientados a dados em tempo real — vincule gráficos a planilhas, feeds e dados ao vivo, controle tudo ao vivo e envie para SDI, NDI ou ST 2110. Milhares de templates editáveis incluídos.",["Gráficos em tempo real orientados a dados","Controle ao vivo e automação","Mais de 4.000 templates incluídos","Saída SDI / NDI / ST 2110"]],
+      ["✨","NewBlue Total FX","Títulos, transições e efeitos para editores","Uma coleção completa de plugins de titulação, transição e efeitos de vídeo para os principais editores não lineares. Adicione geradores de caracteres, títulos animados, transições e visuais direto na timeline — centenas de presets totalmente personalizáveis.",["Títulos e geradores de caracteres","Transições e efeitos de vídeo","Centenas de presets","Plugin para Premiere, DaVinci Resolve, After Effects, Avid e Edius"]],
+      ["🗞️","NewBlue Newsroom","Ecossistema completo de gráficos de redação","Um pipeline integrado que conecta design, jornalistas, control room e playout. Os repórteres preenchem templates bloqueados à marca de dentro do NRCS (iNEWS, ENPS e mais) via MOS/API, os operadores controlam os gráficos ao vivo de qualquer navegador e motores centralizados renderizam no ar em vários canais.",["Integração NRCS / MOS","Controle de espelho pelo navegador","Templates bloqueados à marca (Stencil)","Playout multicanal e redundante"]],
+      ["🖥️","NewBlue Fusion","Appliances turnkey de gráficos no ar","Hardware dedicado com o Captivate pré-instalado — ligar e entrar no ar. Cinco variantes para o seu fluxo de sinal: Fusion NDI, Fusion SDI e Fusion 2110 para HD, além de Fusion Extreme 4K SDI e Fusion Extreme 4K 2110 para UHD/4K. Cada unidade inclui uma licença perpétua do Captivate e os primeiros 12 meses de suporte e atualizações.",["Hardware + software turnkey","Variantes: NDI, SDI, ST 2110","4K/UHD: Extreme 4K SDI e 4K 2110","Inclui licença Captivate + 12 meses de suporte"]]
+    ]
+  },
+  arch:{
+    eyebrow:"Arquitetura do sistema",
+    h1:"Duas formas de implantar",
+    lead:"A NewBlue escala de uma única máquina a um ecossistema de redação totalmente integrado. Alterne para comparar.",
+    opt1:"Standalone",opt2:"Ecossistema de redação",
+    diagramHint:"Passe o mouse sobre um componente para um resumo rápido, ou toque para ver os detalhes completos.",
+    standalone:{
+      title:"Implantação standalone",
+      desc:"Uma configuração autossuficiente: um operador, uma máquina, gráficos no ar. Ideal para streamers, igrejas, AV corporativo e produções ao vivo menores. [PLACEHOLDER — confirmar detalhes técnicos.]",
+      flow:[["🎛️","Operador / Controle","Painel de controle ao vivo"],["💻","Motor NewBlue","Renderiza gráficos"],["📤","Saída","Para switcher / stream"]],
+      points:["Rápido de implantar, infraestrutura mínima","Roda em uma única estação de trabalho","Controle manual ou por templates","Perfeito para produções de canal único"]
+    },
+    newsroom:{
+      title:"Ecossistema de redação",
+      desc:"NewBlue integrado a um pipeline de produção completo — fontes de dados, sistemas de redação (NRCS), MAM e playout multicanal — tudo alimentando gráficos ao vivo automaticamente. [PLACEHOLDER — confirmar integrações.]",
+      flow:[["🗂️","Dados e NRCS","Espelhos, feeds, MAM"],["🧠","Servidor NewBlue","Motor gráfico central"],["🎛️","Operadores","Vários clientes de controle"],["📡","Multicanal","Playout no ar"]],
+      points:["Integra-se aos espelhos da redação (NRCS)","Automação centralizada e orientada a dados","Escala para múltiplos canais e operadores","Confiabilidade e redundância corporativas"]
+    }
+  },
+  pricing:{
+    eyebrow:"Preços",
+    h1:"Software e hardware, do seu jeito",
+    lead:"O software NewBlue está disponível como licença perpétua ou assinatura. O hardware Fusion é entregue como appliances turnkey no ar, com preço único.",
+    currency:"USD",
+    models:{perp:"Licença perpétua",sub:"Assinatura"},
+    swHeading:"Software",
+    swSub:"Licenciamento perpétuo ou por assinatura",
+    hwHeading:"Hardware — Appliances Fusion",
+    hwSub:"Gráficos no ar turnkey — compra única",
+    hwIncludes:"Cada appliance Fusion inclui uma licença perpétua do NewBlue Captivate e os primeiros 12 meses de suporte e atualizações.",
+    hwIncludeBullets:["Licença perpétua do Captivate incluída","Primeiros 12 meses de suporte e atualizações"],
+    perpNote:"Compra única — a licença é sua.",
+    subNote:"Preço mensal, cobrado anualmente.",
+    cta:"Falar com vendas",
+    software:[
+      {name:"NewBlue Captivate",desc:"Plataforma de gráficos de broadcast em tempo real e orientada a dados — carro-chefe.",featured:true,badge:"Mais popular",
+        perp:{price:"$4,999",term:"único"}, sub:{price:"$166",term:"/mês, cobrado anualmente"},
+        features:["Gráficos em tempo real orientados a dados","Controle ao vivo e automação","Templates incluídos"]},
+      {name:"NewBlue Total FX",desc:"Conjunto de títulos, transições e efeitos de vídeo.",featured:false,badge:"",
+        perp:{price:"$799",term:"único"}, sub:{price:"$24",term:"/mês, cobrado anualmente"},
+        features:["Títulos e geradores de caracteres","Transições e efeitos","Plugin para as principais NLEs: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]},
+      {name:"NewBlue Newsroom",desc:"Ecossistema completo de gráficos de redação, dimensionado para a sua emissora.",featured:false,badge:"",
+        perp:{price:"Sob consulta",term:"implantação sob medida"}, sub:{price:"Sob consulta",term:"implantação sob medida"},
+        features:["Integração NRCS / MOS","Multicanal e multioperador","Suporte empresarial e SLA"]}
+    ],
+    hardware:[
+      {name:"Fusion NDI",desc:"Gráficos no ar turnkey — I/O NDI.",price:"$11,995",term:"único",features:["Hardware + software turnkey","Entrada/saída NDI","Pronto para o ar"]},
+      {name:"Fusion SDI",desc:"Gráficos no ar turnkey — I/O SDI.",price:"$14,995",term:"único",features:["Hardware + software turnkey","Entrada/saída SDI","Pronto para o ar"]},
+      {name:"Fusion 2110",desc:"Gráficos no ar turnkey — ST 2110 IP.",price:"$15,995",term:"único",features:["Hardware + software turnkey","ST 2110 IP","Pronto para o ar"]},
+      {name:"Fusion Extreme 4K SDI",desc:"Gráficos no ar turnkey em 4K — I/O SDI.",price:"$18,995",term:"único",features:["4K / UHD","Entrada/saída SDI","Motor de alto desempenho"]},
+      {name:"Fusion Extreme 4K 2110",desc:"Gráficos no ar turnkey em 4K — ST 2110 IP.",price:"$19,495",term:"único",features:["4K / UHD","ST 2110 IP","Motor de alto desempenho"]}
+    ],
+    note:"Preços em USD. A assinatura mostra o preço mensal, cobrado anualmente. O NewBlue Newsroom é orçado por implantação. Preços por volume e regionais disponíveis sob consulta."
+  },
+  vs:{
+    eyebrow:"NewBlue vs gráficos HTML",
+    h1:"NewBlue Captivate vs HTML5 / Cloud CG",
+    lead:"Uma comparação recurso a recurso de um motor gráfico feito para broadcast contra geradores de caracteres HTML5 / Cloud baseados em navegador.",
+    colB:"NewBlue Captivate", colC:"HTML5 / Cloud CG",
+    featureCol:"Recurso",
+    viewCatalog:"Ver catálogo →",
+    groups:[
+      {title:"Recursos e fluxos de trabalho", rows:[
+        {f:"Catálogo de templates", nb:"Mais de 4.000 templates incluídos.", catalog:true, html:"Até 150 templates incluídos."},
+        {f:"Importação de projeto do Photoshop", nb:"Importa nativamente arquivos .psd com camadas.", demos:[{label:"Demo",src:"psd-import.mp4"}], html:"Nenhuma importação de gráficos — cada projeto precisa ser refeito na plataforma."},
+        {f:"Adobe After Effects direto", nb:"Importe arquivos .aep, .mogrt ou .psd direto no title designer local para mapeamento de dados ao vivo em tempo real — sem conversões para assets web.", demos:[{label:"Demo",src:"ae-import.mp4"}], html:"Nenhuma importação de gráficos — cada projeto precisa ser refeito na plataforma."},
+        {f:"Playout local de planilhas / arquivos", nb:"Processamento local robusto para planilhas CSV/XLSX offline e sequenciamento de mídia local — sem conexão contínua com a nuvem.", demos:[{label:"Demo",src:"spreadsheet-playout.mp4"}], html:""},
+        {f:"Planilha como fonte de dados", nb:"Local ou nuvem.", html:"Apenas nuvem."},
+        {f:"Controle de câmera PTZ", nb:"Os operadores gerenciam movimento, foco e ângulos predefinidos da câmera de dentro da interface de produção.", html:""},
+        {f:"Ingest e playout multivídeo NDI / HDMI direto", nb:"Recebe sinais locais NDI, SDI, ST 2110, SRT, WebRTC, OMT, HDMI e USB diretamente nas composições locais — sem camada de captura via navegador.", html:""},
+        {f:"Ingest de gráficos HTML5", nb:"O Captivate pode receber gráficos HTML5 / Cloud como fonte.", html:""},
+        {f:"Ambientes e geometrias 3D reais", nb:"Interface de design gráfico 3D integrada com rotação real no eixo Z, extrusões 3D, iluminação e reflexos.", html:"Limitado a padrões web 2D planos (HTML, CSS, SVG e camadas canvas 2D)."},
+        {f:"Assistente de IA (incl. português)", nb:"Chat de IA em linguagem natural integrado para suporte ao vivo.", html:""}
+      ]},
+      {title:"Switching, redes sociais e reprodução de vídeo", rows:[
+        {f:"Switching de vídeo / áudio ao vivo", nb:"Switching nativo entre fontes físicas ao vivo (SDI, NDI, HDMI, USB, etc.) com transições integradas como wipes.", html:""},
+        {f:"Squeezes", nb:"Squeeze-back com deploy de barra L/J perfeitamente sincronizado e controle de múltiplas zonas.", demos:[{label:"FedEx",src:"squeeze-fedex.mp4"},{label:"Coca-Cola",src:"squeeze-cocacola.mp4"}], html:""},
+        {f:"Reprodução de vídeo", nb:"Reproduza vídeo — clipes de redes sociais ou playlists de vídeo local.", demos:[{label:"Demo",src:"video-playback.mp4"}], html:""},
+        {f:"Mixagem de áudio local", nb:"Mixer de áudio interno para tratar e animar entradas de áudio ao vivo junto com a reprodução de clipes.", html:""}
+      ]},
+      {title:"Gráficos e animação", rows:[
+        {f:"Animação suave baseada em hardware", nb:"O fluxo local renderiza animação e movimento suaves — sem o crawl travado do HTML5 em tickers.", html:""},
+        {f:"Rolagem de créditos", nb:"Rolagens como créditos de abertura ou encerramento.", html:""},
+        {f:"Integração com NLE", nb:"Integra-se às principais plataformas de pós: Adobe Premiere Pro, DaVinci Resolve, GV Edius e Avid Media Composer.", html:""}
+      ]}
+    ],
+    close:"Em resumo: o HTML5 / Cloud CG esconde seu custo real em tempo de desenvolvimento e em um navegador em que você não pode confiar totalmente no ar. A NewBlue é feita para o ao vivo desde a base."
+  },
+  contact:{
+    eyebrow:"Contato",
+    h1:"Vamos falar sobre sua produção",
+    lead:"Entre em contato para uma demonstração ao vivo, preços ou um plano de implantação sob medida. [PLACEHOLDER — substituir pelos dados reais do diretor de negócios.]",
+    fields:[
+      ["👤","Desenvolvimento de Negócios","[Nome] — [Cargo]"],
+      ["✉️","E-mail","[email@newbluefx.com]"],
+      ["📞","Telefone / WhatsApp","[+00 000 000 0000]"],
+      ["🌐","Site","newbluefx.com"],
+      ["📍","Encontre-nos","SET Expo — Brasil"]
+    ],
+    qrTitle:"Escaneie para salvar o contato",
+    qrSub:"Funciona offline — codifica os dados de contato",
+    cta:"Solicitar demonstração ao vivo"
+  }
+};
+
+/* ---------- Spanish (ES) ---------- */
+CONTENT.es = {
+  nav:{home:"Inicio",products:"Productos",arch:"Arquitectura",pricing:"Precios",catalog:"Catálogo",vs:"NewBlue vs HTML",contact:"Contacto"},
+  footer:"NewBlue — Gráficos en tiempo real para producción en vivo, fáciles y accesibles.",
+  catalogPage:{eyebrow:"Catálogo de plantillas",h1:"Explora la biblioteca de plantillas",lead:"Explora las plantillas gráficas listas para usar de NewBlue — busca, filtra y previsualiza cientos de diseños. [PLACEHOLDER introducción.]"},
+  home:{
+    eyebrow:"Gráficos en tiempo real, basados en datos",
+    h1:"Convierte tus datos en gráficos en vivo al aire",
+    lead:"NewBlue genera gráficos dinámicos y basados en datos para producción en vivo. Vincula rótulos, tickers, tablas de posiciones y pantallas completas a hojas de cálculo, feeds y datos en vivo — y actualízalos al aire, en tiempo real. Desde la timeline de un solo editor hasta una redacción entera, de forma fácil y accesible.",
+    cta1:"Ver productos",cta2:"Ver demostración",
+    pills:["Gráficos basados en datos","Control en vivo en tiempo real","Vinculación con hojas y feeds en vivo","SDI / NDI / ST 2110"],
+    stats:[["16","Canales de gráficos en vivo"],["4.000+","Plantillas incluidas"],["4K","Listo para UHD"]],
+    videoLabel:"Mira NewBlue en acción — toca para reproducir",
+    scaleTitle:"Una plataforma para cualquier producción",
+    scaleLead:"Ya sea un simple stream digital o una redacción compleja y multicanal, NewBlue se adapta — el mismo look y las mismas herramientas, creciendo contigo.",
+    scaleSimple:"Digital simple",
+    scaleComplex:"Redacción compleja",
+    scaleItems:[
+      ["🎥","Creadores y streamers","Una laptop, un stream — títulos y rótulos en vivo."],
+      ["⛪","Corporativo e iglesias","IMAG, letras y rótulos para eventos y servicios."],
+      ["🏆","Deportes en vivo","Marcadores y tablas de posiciones basados en datos que se actualizan en vivo."],
+      ["🗞️","Noticias y redacción","Un pipeline completo integrado con NRCS en muchos canales."]
+    ],
+    galleryTitle:"Míralo en pantalla",
+    shots:["Gráficos en vivo basados en datos","Hardware NewBlue Fusion","Redacción y deportes en acción"],
+    whyTitle:"Por qué NewBlue",
+    why:[
+      ["📊","Gráficos basados en datos","Vincula gráficos a hojas de cálculo, feeds en vivo y fuentes de datos — marcadores, tablas de posiciones y tickers se actualizan automáticamente a medida que cambian los datos."],
+      ["⚡","Tiempo real y en vivo","Renderizado acelerado por hardware y control en vivo, hechos para la presión del directo. Haz cambios sobre la marcha, en hasta 16 canales y 4K."],
+      ["🧩","En vivo y post","Una sola familia entre gráficos en vivo (Captivate, Fusion) y edición de video (Total FX) — el mismo look impecable al aire y en la timeline."],
+      ["💸","Fácil y accesible","Gráficos de broadcast potentes sin la complejidad ni el precio elevado — licenciamiento perpetuo o por suscripción, más el hardware llave en mano Fusion."]
+    ]
+  },
+  products:{
+    eyebrow:"La línea de productos",
+    h1:"Software y hardware para gráficos en vivo",
+    lead:"Desde la timeline de un solo editor hasta una redacción entera al aire — NewBlue abarca software creativo, flujos de trabajo integrados de redacción y hardware llave en mano.",
+    items:[
+      ["📺","NewBlue Captivate","Plataforma de gráficos de broadcast en tiempo real","La aplicación insignia de gráficos en vivo. Crea y reproduce rótulos, tickers, crawls, marcadores y pantallas completas basados en datos en tiempo real — vincula gráficos a hojas de cálculo, feeds y datos en vivo, contrólalo todo en vivo y envía a SDI, NDI o ST 2110. Miles de plantillas editables incluidas.",["Gráficos en tiempo real basados en datos","Control en vivo y automatización","Más de 4.000 plantillas incluidas","Salida SDI / NDI / ST 2110"]],
+      ["✨","NewBlue Total FX","Títulos, transiciones y efectos para editores","Una colección completa de complementos de titulación, transición y efectos de video para los principales editores no lineales. Agrega rótulos, títulos animados, transiciones y looks directamente en tu timeline — cientos de presets totalmente personalizables.",["Títulos y rótulos","Transiciones y efectos de video","Cientos de presets","Complemento para Premiere, DaVinci Resolve, After Effects, Avid y Edius"]],
+      ["🗞️","NewBlue Newsroom","Ecosistema completo de gráficos de redacción","Un pipeline integrado que conecta diseño, periodistas, control room y playout. Los reporteros rellenan plantillas bloqueadas a la marca desde su NRCS (iNEWS, ENPS y más) por MOS/API, los operadores controlan los gráficos en vivo desde cualquier navegador y motores centralizados renderizan al aire en varios canales.",["Integración NRCS / MOS","Control de escaleta por navegador","Plantillas bloqueadas a la marca (Stencil)","Playout multicanal y redundante"]],
+      ["🖥️","NewBlue Fusion","Appliances llave en mano de gráficos al aire","Hardware dedicado con Captivate preinstalado — conectar y salir al aire. Cinco variantes para tu cadena de señal: Fusion NDI, Fusion SDI y Fusion 2110 para HD, más Fusion Extreme 4K SDI y Fusion Extreme 4K 2110 para UHD/4K. Cada unidad incluye una licencia perpetua de Captivate y los primeros 12 meses de soporte y actualizaciones.",["Hardware + software llave en mano","Variantes: NDI, SDI, ST 2110","4K/UHD: Extreme 4K SDI y 4K 2110","Incluye licencia Captivate + 12 meses de soporte"]]
+    ]
+  },
+  arch:{
+    eyebrow:"Arquitectura del sistema",
+    h1:"Dos formas de implementar",
+    lead:"NewBlue escala de una sola máquina a un ecosistema de redacción totalmente integrado. Alterna para comparar.",
+    opt1:"Standalone",opt2:"Ecosistema de redacción",
+    diagramHint:"Pasa el cursor sobre un componente para un resumen rápido, o tócalo para ver todos los detalles.",
+    standalone:{
+      title:"Implementación standalone",
+      desc:"Una configuración autónoma: un operador, una máquina, gráficos al aire. Ideal para streamers, iglesias, AV corporativo y producciones en vivo más pequeñas. [PLACEHOLDER — confirmar detalles técnicos.]",
+      flow:[["🎛️","Operador / Control","Panel de control en vivo"],["💻","Motor NewBlue","Renderiza gráficos"],["📤","Salida","A switcher / stream"]],
+      points:["Rápido de implementar, infraestructura mínima","Funciona en una sola estación de trabajo","Control manual o por plantillas","Perfecto para producciones de un solo canal"]
+    },
+    newsroom:{
+      title:"Ecosistema de redacción",
+      desc:"NewBlue integrado en un pipeline de producción completo — fuentes de datos, sistemas de redacción (NRCS), MAM y playout multicanal — todo alimentando gráficos en vivo automáticamente. [PLACEHOLDER — confirmar integraciones.]",
+      flow:[["🗂️","Datos y NRCS","Escaletas, feeds, MAM"],["🧠","Servidor NewBlue","Motor gráfico central"],["🎛️","Operadores","Varios clientes de control"],["📡","Multicanal","Playout al aire"]],
+      points:["Se integra con las escaletas de redacción (NRCS)","Automatización centralizada y basada en datos","Escala a múltiples canales y operadores","Fiabilidad y redundancia empresarial"]
+    }
+  },
+  pricing:{
+    eyebrow:"Precios",
+    h1:"Software y hardware, a tu manera",
+    lead:"El software de NewBlue está disponible como licencia perpetua o suscripción. El hardware Fusion se entrega como appliances llave en mano al aire, con un precio único.",
+    currency:"USD",
+    models:{perp:"Licencia perpetua",sub:"Suscripción"},
+    swHeading:"Software",
+    swSub:"Licenciamiento perpetuo o por suscripción",
+    hwHeading:"Hardware — Appliances Fusion",
+    hwSub:"Gráficos al aire llave en mano — compra única",
+    hwIncludes:"Cada appliance Fusion incluye una licencia perpetua de NewBlue Captivate más los primeros 12 meses de soporte y actualizaciones.",
+    hwIncludeBullets:["Licencia perpetua de Captivate incluida","Primeros 12 meses de soporte y actualizaciones"],
+    perpNote:"Compra única — la licencia es tuya.",
+    subNote:"Precio mensual, facturado anualmente.",
+    cta:"Contactar ventas",
+    software:[
+      {name:"NewBlue Captivate",desc:"Plataforma insignia de gráficos de broadcast en tiempo real y basada en datos.",featured:true,badge:"Más popular",
+        perp:{price:"$4,999",term:"único"}, sub:{price:"$166",term:"/mes, facturado anualmente"},
+        features:["Gráficos en tiempo real basados en datos","Control en vivo y automatización","Plantillas incluidas"]},
+      {name:"NewBlue Total FX",desc:"Conjunto de títulos, transiciones y efectos de video.",featured:false,badge:"",
+        perp:{price:"$799",term:"único"}, sub:{price:"$24",term:"/mes, facturado anualmente"},
+        features:["Títulos y rótulos","Transiciones y efectos","Complemento para las principales NLE: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]},
+      {name:"NewBlue Newsroom",desc:"Ecosistema completo de gráficos de redacción, dimensionado a tu planta.",featured:false,badge:"",
+        perp:{price:"A consultar",term:"implementación a medida"}, sub:{price:"A consultar",term:"implementación a medida"},
+        features:["Integración NRCS / MOS","Multicanal y multioperador","Soporte empresarial y SLA"]}
+    ],
+    hardware:[
+      {name:"Fusion NDI",desc:"Gráficos al aire llave en mano — E/S NDI.",price:"$11,995",term:"único",features:["Hardware + software llave en mano","Entrada/salida NDI","Listo al aire"]},
+      {name:"Fusion SDI",desc:"Gráficos al aire llave en mano — E/S SDI.",price:"$14,995",term:"único",features:["Hardware + software llave en mano","Entrada/salida SDI","Listo al aire"]},
+      {name:"Fusion 2110",desc:"Gráficos al aire llave en mano — ST 2110 IP.",price:"$15,995",term:"único",features:["Hardware + software llave en mano","ST 2110 IP","Listo al aire"]},
+      {name:"Fusion Extreme 4K SDI",desc:"Gráficos al aire llave en mano en 4K — E/S SDI.",price:"$18,995",term:"único",features:["4K / UHD","Entrada/salida SDI","Motor de alto rendimiento"]},
+      {name:"Fusion Extreme 4K 2110",desc:"Gráficos al aire llave en mano en 4K — ST 2110 IP.",price:"$19,495",term:"único",features:["4K / UHD","ST 2110 IP","Motor de alto rendimiento"]}
+    ],
+    note:"Precios en USD. La suscripción muestra el precio mensual, facturado anualmente. NewBlue Newsroom se cotiza por implementación. Precios por volumen y regionales disponibles a pedido."
+  },
+  vs:{
+    eyebrow:"NewBlue vs gráficos HTML",
+    h1:"NewBlue Captivate vs HTML5 / Cloud CG",
+    lead:"Una comparación característica por característica de un motor gráfico diseñado para broadcast frente a generadores de caracteres HTML5 / Cloud basados en navegador.",
+    colB:"NewBlue Captivate", colC:"HTML5 / Cloud CG",
+    featureCol:"Capacidad",
+    viewCatalog:"Ver catálogo →",
+    groups:[
+      {title:"Capacidades y flujos de trabajo", rows:[
+        {f:"Catálogo de plantillas", nb:"Más de 4.000 plantillas incluidas.", catalog:true, html:"Hasta 150 plantillas incluidas."},
+        {f:"Importación de proyecto de Photoshop", nb:"Importa de forma nativa archivos .psd con capas.", demos:[{label:"Demo",src:"psd-import.mp4"}], html:"Sin importación de gráficos — cada proyecto debe rehacerse en la plataforma."},
+        {f:"Adobe After Effects directo", nb:"Importa archivos .aep, .mogrt o .psd directamente al title designer local para mapeo de datos en vivo en tiempo real — sin conversiones a recursos web.", demos:[{label:"Demo",src:"ae-import.mp4"}], html:"Sin importación de gráficos — cada proyecto debe rehacerse en la plataforma."},
+        {f:"Playout local de hojas de cálculo / archivos", nb:"Procesamiento local robusto para hojas CSV/XLSX offline y secuenciación de medios locales — sin conexión continua a la nube.", demos:[{label:"Demo",src:"spreadsheet-playout.mp4"}], html:""},
+        {f:"Hoja de cálculo como fuente de datos", nb:"Local o nube.", html:"Solo nube."},
+        {f:"Control de cámara PTZ", nb:"Los operadores gestionan el movimiento, el enfoque y los ángulos predefinidos de la cámara desde la interfaz de producción.", html:""},
+        {f:"Ingesta y playout multivideo NDI / HDMI directo", nb:"Ingesta señales locales NDI, SDI, ST 2110, SRT, WebRTC, OMT, HDMI y USB directamente en las composiciones locales — sin capa de captura por navegador.", html:""},
+        {f:"Ingesta de gráficos HTML5", nb:"Captivate puede ingestar gráficos HTML5 / Cloud como fuente.", html:""},
+        {f:"Entornos y geometrías 3D reales", nb:"Interfaz de diseño gráfico 3D integrada con rotación real en el eje Z, extrusiones 3D, iluminación y reflejos.", html:"Limitado a estándares web 2D planos (HTML, CSS, SVG y capas canvas 2D)."},
+        {f:"Asistente de IA (incl. portugués)", nb:"Chat de IA en lenguaje natural integrado para soporte en vivo.", html:""}
+      ]},
+      {title:"Switching, redes sociales y reproducción de video", rows:[
+        {f:"Switching de video / audio en vivo", nb:"Switching nativo entre fuentes físicas en vivo (SDI, NDI, HDMI, USB, etc.) con transiciones integradas como wipes.", html:""},
+        {f:"Squeezes", nb:"Squeeze-back con despliegue de barra L/J perfectamente sincronizado y control de múltiples zonas.", demos:[{label:"FedEx",src:"squeeze-fedex.mp4"},{label:"Coca-Cola",src:"squeeze-cocacola.mp4"}], html:""},
+        {f:"Reproducción de video", nb:"Reproduce video — clips de redes sociales o listas de reproducción de video local.", demos:[{label:"Demo",src:"video-playback.mp4"}], html:""},
+        {f:"Mezcla de audio local", nb:"Mezclador de audio interno para gestionar y animar entradas de audio en vivo junto con la reproducción de clips.", html:""}
+      ]},
+      {title:"Gráficos y animación", rows:[
+        {f:"Animación suave basada en hardware", nb:"El flujo local renderiza animación y movimiento suaves — sin el crawl entrecortado de HTML5 en los tickers.", html:""},
+        {f:"Roll de créditos", nb:"Créditos en roll al inicio o al cierre.", html:""},
+        {f:"Integración con NLE", nb:"Se integra con las principales plataformas de postproducción: Adobe Premiere Pro, DaVinci Resolve, GV Edius y Avid Media Composer.", html:""}
+      ]}
+    ],
+    close:"En resumen: HTML5 / Cloud CG oculta su costo real en tiempo de desarrollo y en un navegador en el que no puedes confiar del todo al aire. NewBlue está hecho para el vivo desde su base."
+  },
+  contact:{
+    eyebrow:"Contacto",
+    h1:"Hablemos de tu producción",
+    lead:"Contáctanos para una demostración en vivo, precios o un plan de implementación a medida. [PLACEHOLDER — reemplazar por los datos reales del director de negocios.]",
+    fields:[
+      ["👤","Desarrollo de Negocios","[Nombre] — [Cargo]"],
+      ["✉️","Correo","[email@newbluefx.com]"],
+      ["📞","Teléfono / WhatsApp","[+00 000 000 0000]"],
+      ["🌐","Sitio web","newbluefx.com"],
+      ["📍","Encuéntranos","SET Expo — Brasil"]
+    ],
+    qrTitle:"Escanea para guardar el contacto",
+    qrSub:"Funciona offline — codifica los datos de contacto",
+    cta:"Solicitar demostración en vivo"
+  }
+};
+
+
+/* ===================== RENDERING ===================== */
+let lang = "en";
+let page = "home";
+let archView = "standalone";
+let priceModel = "perp";
+const app = document.getElementById("app");
+const PAGES = ["home","products","arch","pricing","catalog","vs","contact"];
+const esc = s => String(s);
+
+function videoBlock(src, label){
+  // Local video with graceful poster fallback. Drop file at videos/<src>.
+  return `<div class="video">
+    <video id="vid_${src.replace(/\W/g,'')}" playsinline controls preload="none" style="display:none"
+      onerror="this.style.display='none';this.previousElementSibling.style.display='grid';"></video>
+    <div class="poster" onclick="playVideo('${src}',this)">
+      <div>
+        <div class="play">▶</div>
+        <div class="lbl">${esc(label)}</div>
+        <small>videos/${src}</small>
+      </div>
+    </div>
+  </div>`;
+}
+function openVideo(src,label){
+  const m=document.getElementById('vmodal'), v=document.getElementById('vmodal-vid'), msg=document.getElementById('vmodal-msg');
+  msg.style.display='none'; v.style.display='block';
+  v.onerror=()=>{v.style.display='none';msg.style.display='block';
+    msg.textContent='Demo clip placeholder — add videos/'+src+' to enable this demo ('+label+').';};
+  v.src='videos/'+src;
+  m.classList.add('show');
+  v.play().catch(()=>{});
+}
+function closeVideo(e,force){
+  if(force||(e&&e.target&&e.target.id==='vmodal')){
+    const m=document.getElementById('vmodal'), v=document.getElementById('vmodal-vid');
+    v.pause(); v.removeAttribute('src'); v.load(); m.classList.remove('show');
+  }
+}
+function playVideo(src, posterEl){
+  const wrap = posterEl.parentElement;
+  const v = wrap.querySelector("video");
+  v.src = "videos/"+src;
+  v.style.display="block";
+  posterEl.style.display="none";
+  v.play().catch(()=>{});
+}
+
+function heroArt(){
+  return `<svg class="hero-art" viewBox="0 0 360 262" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <defs><linearGradient id="hbar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#00d0ff"/><stop offset="1" stop-color="#2e8bff"/></linearGradient></defs>
+    <rect x="8" y="12" width="344" height="200" rx="16" fill="#0c1730" stroke="#243352"/>
+    <circle cx="28" cy="32" r="4" fill="#2e8bff"/><circle cx="42" cy="32" r="4" fill="#00d0ff"/><circle cx="56" cy="32" r="4" fill="#5b6cff"/>
+    <rect class="bar" style="animation-delay:0s"   x="34"  y="58" width="30" height="126" rx="6" fill="url(#hbar)"/>
+    <rect class="bar" style="animation-delay:.45s" x="78"  y="58" width="30" height="126" rx="6" fill="url(#hbar)"/>
+    <rect class="bar" style="animation-delay:.9s"  x="122" y="58" width="30" height="126" rx="6" fill="url(#hbar)"/>
+    <rect class="bar" style="animation-delay:1.35s" x="166" y="58" width="30" height="126" rx="6" fill="url(#hbar)"/>
+    <g transform="translate(224,132)">
+      <rect x="0" y="0" width="116" height="54" rx="9" fill="#101d38" stroke="#2e8bff"/>
+      <rect x="12" y="13" width="6" height="28" rx="3" fill="url(#hbar)"/>
+      <rect x="26" y="15" width="74" height="9" rx="4" fill="#5b7099"/>
+      <rect x="26" y="31" width="50" height="7" rx="3" fill="#33456a"/>
+    </g>
+    <rect x="8" y="224" width="344" height="22" rx="7" fill="#101d38" stroke="#243352"/>
+    <rect x="18" y="231" width="118" height="7" rx="3" fill="#33456a"/>
+    <rect x="146" y="231" width="78" height="7" rx="3" fill="#33456a"/>
+    <rect x="234" y="231" width="96" height="7" rx="3" fill="#33456a"/>
+  </svg>`;
+}
+function renderHome(c){
+  return `<section class="hero">
+    <div class="glow"></div>
+    ${heroArt()}
+    <div class="hero-inner">
+      <div class="eyebrow">${c.eyebrow}</div>
+      <h1>${c.h1}</h1>
+      <p class="lead">${c.lead}</p>
+      <div class="cta-row">
+        <button class="btn" onclick="go('products')">${c.cta1} →</button>
+        <button class="btn ghost" onclick="go('products')">▶ ${c.cta2}</button>
+      </div>
+      <div class="pills">${c.pills.map(p=>`<span class="pill">${p}</span>`).join("")}</div>
+      <div class="stats">${c.stats.map(s=>`<div class="stat"><b>${s[0]}</b><span>${s[1]}</span></div>`).join("")}</div>
+    </div>
+  </section>
+
+  <div class="section">
+    <h2>${c.scaleTitle}</h2>
+    <p class="lead" style="font-size:16px;margin-top:4px">${c.scaleLead}</p>
+    <div class="scale-bar"><span>${c.scaleSimple}</span><i></i><span>${c.scaleComplex}</span></div>
+    <div class="uc-grid">
+      ${c.scaleItems.map(s=>`<div class="usecase"><div class="uc-ic">${s[0]}</div><div><h3>${s[1]}</h3><p>${s[2]}</p></div></div>`).join("")}
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>${c.galleryTitle}</h2>
+    <div class="shots">
+      <figure class="shot" data-ph="Add images/home-1.jpg"><img src="images/crew-basketball-statistics.webp" alt="" onerror="this.parentElement.classList.add('ph')"><figcaption>${c.shots[0]}</figcaption></figure>
+      <figure class="shot hw"><img src="images/fusion.png" alt=""><figcaption>${c.shots[1]}</figcaption></figure>
+      <figure class="shot" data-ph="Add images/home-2.jpg"><img src="images/PCR.jpg" alt="" onerror="this.parentElement.classList.add('ph')"><figcaption>${c.shots[2]}</figcaption></figure>
+    </div>
+  </div>
+
+  <div class="section">${videoBlock("sizzle.mp4", c.videoLabel)}</div>
+  <div class="section">
+    <h2>${c.whyTitle}</h2>
+    <div class="grid g2" style="margin-top:18px">
+      ${c.why.map(w=>`<div class="card"><div class="ico">${w[0]}</div><h3>${w[1]}</h3><p>${w[2]}</p></div>`).join("")}
+    </div>
+  </div>`;
+}
+
+function renderProducts(c){
+  return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
+  <div class="grid g2 section">
+    ${c.items.map(it=>`<div class="card">
+      <div class="ico">${it[0]}</div>
+      <div class="tag">${it[2]}</div>
+      <h3>${it[1]}</h3>
+      <p>${it[3]}</p>
+      <ul style="list-style:none;margin-top:12px;display:grid;gap:6px">
+        ${it[4].map(f=>`<li style="color:var(--muted);font-size:14px;padding-left:20px;position:relative">
+          <span style="position:absolute;left:0;color:var(--brand2)">▹</span>${f}</li>`).join("")}
+      </ul>
+    </div>`).join("")}
+  </div>`;
+}
+
+/* ---- Newsroom diagram: your exported SVG + clickable hotspots (preliminary texts) ----
+   Hotspot rects are in the SVG's own coordinate system (viewBox 1946 x 972),
+   converted to % at render time so they stay aligned at any screen size. */
+const NSR_VB = {w:1946, h:972};
+const NSR_HOTSPOTS = [
+  // containers first, inner boxes after, so inner boxes sit on top for clicks
+  {id:'gateway',x:730,y:570,w:370,h:180,t:'🌐 Gateway',d:'The API-first integration layer between newsroom/production tools and the graphics engines. Connects over REST/WebSockets with webhooks for data, automation and third-party control (running orders sync both ways); an included MOS module bridges legacy iNEWS/ENPS environments into the same pipeline. Runs software-only or as a turnkey appliance.'},
+  {id:'captivate-designer',x:109,y:155,w:190,h:110,t:'🎨 Captivate Designer',d:'The full graphics authoring application where designers build Captivate scenes: 2D/3D lower thirds, bugs, crawls, tickers, scoreboards and layouts, with data-binding and animation. It\'s the origin point for every look; finished graphics are published downstream (via Stencil) as fill-in templates for journalists and operators.'},
+  {id:'stencil',x:119,y:320,w:170,h:110,t:'🔒 Stencil',d:'Designer-built, brand-locked templating layer. Takes any Captivate graphic and publishes it as a controlled fill-in template, exposing only the fields an operator should edit and locking the rest to protect brand. Each template becomes a reusable, API/MOS-ready data element that flows to Reporter (journalists) and Conductor (operators) from a single source design.'},
+  {id:'after-effects',x:351,y:130,w:128,h:42,t:'🎞️ Adobe After Effects',d:'Third-party motion-graphics tool. Designers build complex animated compositions in AE and import them into Captivate as real-time-playable scene elements, with text, image and video layers designated as replaceable/data-driven fields.'},
+  {id:'photoshop',x:351,y:190,w:128,h:42,t:'🖼️ Adobe Photoshop',d:'Third-party raster tool. Layered stills, backgrounds, textures and touch-ups are created in PSD and imported into Captivate designs as assets.'},
+  {id:'illustrator',x:351,y:250,w:128,h:42,t:'✒️ Adobe Illustrator',d:'Third-party vector tool. Logos, icons, maps and other scalable vector artwork are prepared here and brought into the design pipeline.'},
+  {id:'titler-pro',x:567,y:155,w:180,h:315,t:'✍️ Titler Pro — NLE workstations',d:'NewBlue\'s titling/motion-graphics plug-in for non-linear editors (Premiere, Avid, etc.). Provides a bridge so graphics built in the Captivate ecosystem can be reused inside the edit suite, connecting file-based/post workflows to the same look used on air.'},
+  {id:'reporter-ws',x:760,y:155,w:190,h:285,t:'🖥️ Reporter workstations',d:'In-newsroom, in-rundown graphics authoring for journalists. From inside iNEWS, ENPS, Saga, Cuez or any NRCS, reporters browse approved Stencil templates, fill in story text/images/clips, get an instant WYSIWYG preview, and drop the finished graphic into the running order — no graphics training or separate app.'},
+  {id:'nrcs-api',x:965,y:155,w:140,h:285,t:'🔌 NRCS API / MOS',d:'The newsroom-facing integration boundary: the API and MOS surface presented to the Newsroom Computer System. This is where running orders sync and where each graphic becomes an addressable, status-aware object — modern NRCS/production tools over REST/WebSockets, legacy systems over MOS.'},
+  {id:'conductor',x:1181,y:150,w:370,h:225,t:'🎛️ Conductor positions',d:'Browser-based, fully remote rundown and playout control. From any screen — gallery or remote — operators load the running order, monitor item status, make last-second edits, and take graphics to air across multiple engines and channels from one HTML interface, turning any browser into a playout position.'},
+  {id:'vault',x:121,y:630,w:240,h:120,t:'🗄️ Vault',d:'Shared, versioned repository for every project, template and asset. Design, preview and playout nodes all draw from one central store with full revision history, rollback and one-click distribution to every engine; update a template once and it reaches the whole facility. Doubles as disaster-recovery backup.'},
+  {id:'preview-server',x:420,y:630,w:240,h:120,t:'👁️ Preview Server',d:'Server-side WYSIWYG preview engine. Renders frame-accurate stills and motion previews on demand — for a journalist filling a lower-third in Reporter or an operator checking a build in Conductor — without tying up an on-air channel. Runs the Captivate Broadcast preview/render component only (no live data controllers) and pools across instances for a whole newsroom.'},
+  {id:'api-mos-int',x:748,y:648,w:152,h:62,t:'🔗 API / MOS NRCS integration',d:'The MOS/REST connection established and certified against a specific newsroom system — the handshake and message flow (rundown push, item insert/move/delete, on-air status/cues) that makes a given NRCS a live, two-way participant in the Captivate pipeline.'},
+  {id:'automation-server',x:935,y:648,w:138,h:62,t:'🧠 Automation Server',d:'The orchestration/automation service that ties data, triggers and third-party control into playout — driving graphics automatically from data sources and external systems rather than manual take-by-take operation (e.g. the leaderboard/crawl automation workflows in Captivate).'},
+  {id:'captivate-engine',x:1130,y:552,w:230,h:80,t:'⚙️ Captivate Engine',d:'The on-air rendering engine (Captivate Broadcast running on Fusion 3 hardware). Takes playout commands, pulls scenes/assets from Vault, renders live data-driven graphics, and outputs the on-air signal (key+fill) — up to 16 channels, SDI/NDI or ST 2110 IP.'},
+  {id:'switcher',x:1465,y:580,w:135,h:83,t:'🎚️ Production Switcher',d:'The vision mixer/switcher in the signal chain that combines the engine\'s graphics output (key+fill) with program video. Sits downstream of the Engine; graphics are composited into the final broadcast here.'},
+  {id:'cloud-ampp',x:1430,y:690,w:514,h:130,t:'☁️ Cloud instance — Grass Valley AMPP',d:'A deployment of the graphics/playout components onto Grass Valley\'s AMPP (Agile Media Processing Platform), the cloud/microservices fabric for signal I/O and orchestration — letting the Captivate pipeline run as cloud services with AMPP handling media transport and control.'},
+  {id:'cloud-aws',x:1430,y:840,w:514,h:130,t:'☁️ AWS Cloud G5 EC2 instance',d:'A GPU-accelerated cloud host (EC2 G5, NVIDIA A10G GPUs) for running the render engine and/or preview server in AWS. Provides the GPU horsepower Captivate\'s real-time rendering needs when the plant is deployed in the cloud rather than on-prem Fusion 3 hardware.'}
+];
+/* Translations for the newsroom popups (English lives in NSR_HOTSPOTS above and is the fallback). */
+const NSR_I18N = {
+  pt:{
+    'gateway':{t:'🌐 Gateway',d:'A camada de integração API-first entre as ferramentas de redação/produção e os motores gráficos. Conecta-se via REST/WebSockets com webhooks para dados, automação e controle de terceiros (os espelhos sincronizam nos dois sentidos); um módulo MOS incluído integra ambientes legados iNEWS/ENPS ao mesmo pipeline. Funciona somente em software ou como appliance turnkey.'},
+    'captivate-designer':{t:'🎨 Captivate Designer',d:'O aplicativo completo de criação de gráficos onde os designers montam as cenas do Captivate: geradores de caracteres 2D/3D, bugs, crawls, tickers, placares e layouts, com vínculo de dados e animação. É o ponto de origem de cada visual; os gráficos finalizados são publicados adiante (via Stencil) como templates de preenchimento para jornalistas e operadores.'},
+    'stencil':{t:'🔒 Stencil',d:'Camada de templates criada pelo designer e bloqueada à marca. Pega qualquer gráfico do Captivate e o publica como um template de preenchimento controlado, expondo apenas os campos que o operador deve editar e bloqueando o restante para proteger a marca. Cada template vira um elemento de dados reutilizável e pronto para API/MOS, que flui para o Reporter (jornalistas) e o Conductor (operadores) a partir de um único design de origem.'},
+    'after-effects':{t:'🎞️ Adobe After Effects',d:'Ferramenta de motion graphics de terceiros. Os designers criam composições animadas complexas no AE e as importam para o Captivate como elementos de cena reproduzíveis em tempo real, com camadas de texto, imagem e vídeo definidas como campos substituíveis/orientados a dados.'},
+    'photoshop':{t:'🖼️ Adobe Photoshop',d:'Ferramenta raster de terceiros. Imagens estáticas em camadas, fundos, texturas e retoques são criados em PSD e importados para os designs do Captivate como assets.'},
+    'illustrator':{t:'✒️ Adobe Illustrator',d:'Ferramenta vetorial de terceiros. Logotipos, ícones, mapas e outras artes vetoriais escaláveis são preparados aqui e trazidos para o pipeline de design.'},
+    'titler-pro':{t:'✍️ Titler Pro — estações NLE',d:'Plugin de titulação/motion graphics da NewBlue para editores não lineares (Premiere, Avid, etc.). Oferece uma ponte para que os gráficos criados no ecossistema Captivate possam ser reutilizados dentro da suíte de edição, conectando fluxos baseados em arquivo/pós ao mesmo visual usado no ar.'},
+    'reporter-ws':{t:'🖥️ Estações Reporter',d:'Criação de gráficos dentro da redação e do espelho, para jornalistas. De dentro do iNEWS, ENPS, Saga, Cuez ou qualquer NRCS, os repórteres navegam pelos templates aprovados do Stencil, preenchem texto/imagens/clipes da matéria, obtêm uma prévia WYSIWYG instantânea e inserem o gráfico finalizado no espelho — sem treinamento em gráficos nem aplicativo à parte.'},
+    'nrcs-api':{t:'🔌 NRCS API / MOS',d:'A fronteira de integração voltada à redação: a superfície de API e MOS apresentada ao Sistema de Redação (NRCS). É aqui que os espelhos sincronizam e onde cada gráfico se torna um objeto endereçável e ciente de status — ferramentas modernas de NRCS/produção via REST/WebSockets, sistemas legados via MOS.'},
+    'conductor':{t:'🎛️ Posições Conductor',d:'Controle de espelho e playout totalmente remoto e baseado em navegador. De qualquer tela — no switcher ou remota — os operadores carregam o espelho, monitoram o status dos itens, fazem edições de última hora e colocam gráficos no ar em vários motores e canais a partir de uma única interface HTML, transformando qualquer navegador em uma posição de playout.'},
+    'vault':{t:'🗄️ Vault',d:'Repositório compartilhado e versionado para cada projeto, template e asset. Os nós de design, prévia e playout consomem de um único armazenamento central com histórico completo de revisões, rollback e distribuição com um clique para todos os motores; atualize um template uma vez e ele chega a toda a emissora. Serve também como backup de recuperação de desastres.'},
+    'preview-server':{t:'👁️ Preview Server',d:'Motor de prévia WYSIWYG do lado do servidor. Renderiza imagens estáticas e prévias em movimento com precisão de quadro sob demanda — para um jornalista preenchendo um gerador de caracteres no Reporter ou um operador conferindo uma montagem no Conductor — sem ocupar um canal no ar. Executa apenas o componente de prévia/render do Captivate Broadcast (sem controladores de dados ao vivo) e distribui a carga entre instâncias para toda a redação.'},
+    'api-mos-int':{t:'🔗 Integração NRCS API / MOS',d:'A conexão MOS/REST estabelecida e certificada para um sistema de redação específico — o handshake e o fluxo de mensagens (envio do espelho, inserção/movimentação/exclusão de itens, status/cues no ar) que torna um determinado NRCS um participante ativo e bidirecional do pipeline Captivate.'},
+    'automation-server':{t:'🧠 Automation Server',d:'O serviço de orquestração/automação que integra dados, gatilhos e controle de terceiros ao playout — acionando gráficos automaticamente a partir de fontes de dados e sistemas externos, em vez da operação manual take a take (por exemplo, os fluxos de automação de leaderboard/crawl no Captivate).'},
+    'captivate-engine':{t:'⚙️ Captivate Engine',d:'O motor de renderização no ar (Captivate Broadcast rodando em hardware Fusion 3). Recebe os comandos de playout, busca cenas/assets no Vault, renderiza gráficos ao vivo orientados a dados e entrega o sinal no ar (key+fill) — até 16 canais, SDI/NDI ou ST 2110 IP.'},
+    'switcher':{t:'🎚️ Switcher de produção',d:'O switcher/mixer de vídeo na cadeia de sinal que combina a saída gráfica do motor (key+fill) com o vídeo de programa. Fica a jusante do Engine; os gráficos são compostos na transmissão final aqui.'},
+    'cloud-ampp':{t:'☁️ Instância em nuvem — Grass Valley AMPP',d:'Uma implantação dos componentes de gráficos/playout na AMPP da Grass Valley (Agile Media Processing Platform), a malha de nuvem/microsserviços para I/O de sinal e orquestração — permitindo que o pipeline Captivate rode como serviços em nuvem, com a AMPP cuidando do transporte de mídia e do controle.'},
+    'cloud-aws':{t:'☁️ Instância AWS Cloud G5 EC2',d:'Um host em nuvem acelerado por GPU (EC2 G5, GPUs NVIDIA A10G) para executar o motor de render e/ou o preview server na AWS. Fornece a potência de GPU que a renderização em tempo real do Captivate exige quando a planta é implantada na nuvem, em vez do hardware Fusion 3 on-premises.'}
+  },
+  es:{
+    'gateway':{t:'🌐 Gateway',d:'La capa de integración API-first entre las herramientas de redacción/producción y los motores gráficos. Se conecta mediante REST/WebSockets con webhooks para datos, automatización y control de terceros (las escaletas se sincronizan en ambos sentidos); un módulo MOS incluido integra entornos heredados iNEWS/ENPS al mismo pipeline. Funciona solo por software o como appliance llave en mano.'},
+    'captivate-designer':{t:'🎨 Captivate Designer',d:'La aplicación completa de creación de gráficos donde los diseñadores construyen las escenas de Captivate: rótulos 2D/3D, bugs, crawls, tickers, marcadores y layouts, con vinculación de datos y animación. Es el punto de origen de cada look; los gráficos terminados se publican aguas abajo (vía Stencil) como plantillas para rellenar destinadas a periodistas y operadores.'},
+    'stencil':{t:'🔒 Stencil',d:'Capa de plantillas creada por el diseñador y bloqueada a la marca. Toma cualquier gráfico de Captivate y lo publica como una plantilla controlada para rellenar, exponiendo solo los campos que el operador debe editar y bloqueando el resto para proteger la marca. Cada plantilla se convierte en un elemento de datos reutilizable y listo para API/MOS que fluye hacia Reporter (periodistas) y Conductor (operadores) desde un único diseño de origen.'},
+    'after-effects':{t:'🎞️ Adobe After Effects',d:'Herramienta de motion graphics de terceros. Los diseñadores crean composiciones animadas complejas en AE y las importan a Captivate como elementos de escena reproducibles en tiempo real, con capas de texto, imagen y video designadas como campos reemplazables/basados en datos.'},
+    'photoshop':{t:'🖼️ Adobe Photoshop',d:'Herramienta ráster de terceros. Imágenes fijas por capas, fondos, texturas y retoques se crean en PSD y se importan a los diseños de Captivate como recursos.'},
+    'illustrator':{t:'✒️ Adobe Illustrator',d:'Herramienta vectorial de terceros. Logotipos, iconos, mapas y otras ilustraciones vectoriales escalables se preparan aquí y se incorporan al pipeline de diseño.'},
+    'titler-pro':{t:'✍️ Titler Pro — estaciones NLE',d:'Complemento de titulación/motion graphics de NewBlue para editores no lineales (Premiere, Avid, etc.). Ofrece un puente para que los gráficos creados en el ecosistema Captivate puedan reutilizarse dentro de la suite de edición, conectando los flujos basados en archivo/postproducción con el mismo look usado al aire.'},
+    'reporter-ws':{t:'🖥️ Estaciones Reporter',d:'Creación de gráficos dentro de la redacción y de la escaleta, para periodistas. Desde iNEWS, ENPS, Saga, Cuez o cualquier NRCS, los reporteros exploran las plantillas aprobadas de Stencil, rellenan texto/imágenes/clips de la nota, obtienen una vista previa WYSIWYG instantánea y colocan el gráfico terminado en la escaleta — sin formación en gráficos ni una aplicación aparte.'},
+    'nrcs-api':{t:'🔌 NRCS API / MOS',d:'La frontera de integración orientada a la redacción: la superficie de API y MOS presentada al Sistema de Redacción (NRCS). Aquí se sincronizan las escaletas y cada gráfico se convierte en un objeto direccionable y consciente de su estado — herramientas modernas de NRCS/producción vía REST/WebSockets, sistemas heredados vía MOS.'},
+    'conductor':{t:'🎛️ Posiciones Conductor',d:'Control de escaleta y playout totalmente remoto y basado en navegador. Desde cualquier pantalla — en el control o remota — los operadores cargan la escaleta, monitorean el estado de los ítems, hacen ediciones de último segundo y sacan gráficos al aire en varios motores y canales desde una única interfaz HTML, convirtiendo cualquier navegador en una posición de playout.'},
+    'vault':{t:'🗄️ Vault',d:'Repositorio compartido y versionado para cada proyecto, plantilla y recurso. Los nodos de diseño, vista previa y playout consumen de un único almacén central con historial completo de revisiones, rollback y distribución con un clic a todos los motores; actualiza una plantilla una vez y llega a toda la planta. También sirve como copia de seguridad para recuperación ante desastres.'},
+    'preview-server':{t:'👁️ Preview Server',d:'Motor de vista previa WYSIWYG del lado del servidor. Renderiza imágenes fijas y vistas previas en movimiento con precisión de cuadro bajo demanda — para un periodista rellenando un rótulo en Reporter o un operador revisando un montaje en Conductor — sin ocupar un canal al aire. Ejecuta solo el componente de vista previa/render de Captivate Broadcast (sin controladores de datos en vivo) y reparte la carga entre instancias para toda la redacción.'},
+    'api-mos-int':{t:'🔗 Integración NRCS API / MOS',d:'La conexión MOS/REST establecida y certificada para un sistema de redacción específico — el handshake y el flujo de mensajes (envío de la escaleta, inserción/movimiento/eliminación de ítems, estado/cues al aire) que convierte a un NRCS dado en un participante activo y bidireccional del pipeline de Captivate.'},
+    'automation-server':{t:'🧠 Automation Server',d:'El servicio de orquestación/automatización que integra datos, disparadores y control de terceros al playout — accionando gráficos automáticamente desde fuentes de datos y sistemas externos, en lugar de la operación manual toma a toma (por ejemplo, los flujos de automatización de tabla de posiciones/crawl en Captivate).'},
+    'captivate-engine':{t:'⚙️ Captivate Engine',d:'El motor de renderizado al aire (Captivate Broadcast ejecutándose en hardware Fusion 3). Recibe los comandos de playout, obtiene escenas/recursos del Vault, renderiza gráficos en vivo basados en datos y entrega la señal al aire (key+fill) — hasta 16 canales, SDI/NDI o ST 2110 IP.'},
+    'switcher':{t:'🎚️ Switcher de producción',d:'El switcher/mezclador de video en la cadena de señal que combina la salida gráfica del motor (key+fill) con el video de programa. Se ubica aguas abajo del Engine; los gráficos se componen en la transmisión final aquí.'},
+    'cloud-ampp':{t:'☁️ Instancia en la nube — Grass Valley AMPP',d:'Un despliegue de los componentes de gráficos/playout sobre AMPP de Grass Valley (Agile Media Processing Platform), el tejido de nube/microservicios para E/S de señal y orquestación — permitiendo que el pipeline de Captivate se ejecute como servicios en la nube, con AMPP encargándose del transporte de medios y el control.'},
+    'cloud-aws':{t:'☁️ Instancia AWS Cloud G5 EC2',d:'Un host en la nube acelerado por GPU (EC2 G5, GPUs NVIDIA A10G) para ejecutar el motor de render y/o el preview server en AWS. Aporta la potencia de GPU que el renderizado en tiempo real de Captivate necesita cuando la planta se despliega en la nube en lugar del hardware Fusion 3 on-premises.'}
+  }
+};
+function nsrText(id){
+  const base=NSR_HOTSPOTS.find(h=>h.id===id)||{};
+  const tr=(NSR_I18N[lang]&&NSR_I18N[lang][id])||{};
+  return {t:tr.t||base.t, d:tr.d||base.d};
+}
+function renderNewsroomDiagram(){
+  const hot=h=>{
+    const L=(h.x/NSR_VB.w*100).toFixed(2),T=(h.y/NSR_VB.h*100).toFixed(2),
+          W=(h.w/NSR_VB.w*100).toFixed(2),H=(h.h/NSR_VB.h*100).toFixed(2);
+    return `<button class="nsr-hot" style="left:${L}%;top:${T}%;width:${W}%;height:${H}%" onclick="openNode('${h.id}')" onmouseenter="hoverNode(event,'${h.id}')" onmouseleave="hideHover()"></button>`;
+  };
+  return `<div class="nsr-wrap">
+    <img src="images/newsroom-diagram.svg" alt="NewBlue Newsroom Ecosystem diagram">
+    ${NSR_HOTSPOTS.map(hot).join('')}
+    <div id="nsrpop" class="nsr-pop"></div>
+  </div>
+  <p class="nsr-hint">${CONTENT[lang].arch.diagramHint}</p>`;
+}
+function openNode(id){const n=nsrText(id); if(!n.t)return;
+  const m=document.getElementById('imodal');
+  m.querySelector('.imodal-h').innerHTML=n.t;
+  m.querySelector('.imodal-p').textContent=n.d;
+  m.classList.add('show');}
+function closeNode(e,force){if(force||(e&&e.target&&e.target.id==='imodal'))document.getElementById('imodal').classList.remove('show');}
+function hoverNode(e,id){
+  const n=nsrText(id); if(!n.t)return;
+  const b=e.currentTarget, pop=document.getElementById('nsrpop'), wrap=b.parentElement; if(!pop)return;
+  pop.innerHTML='<b>'+n.t+'</b><span>'+n.d+'</span>';
+  pop.classList.add('show');                                   // show first so width can be measured
+  const pad=10, popW=pop.offsetWidth, wrapW=wrap.clientWidth;
+  let left=b.offsetLeft+b.offsetWidth/2-popW/2;                // centre on the box...
+  left=Math.max(pad, Math.min(left, wrapW-popW-pad));          // ...then clamp inside the diagram
+  pop.style.left=left+'px';
+  const popH=pop.offsetHeight, top=b.offsetTop, bottom=b.offsetTop+b.offsetHeight;
+  if(top-popH-10>=0){ pop.style.top=top+'px'; pop.style.transform='translateY(calc(-100% - 10px))'; } // room above: show above
+  else{ pop.style.top=(bottom+10)+'px'; pop.style.transform='none'; }                                 // else show below
+}
+function hideHover(){const pop=document.getElementById('nsrpop'); if(pop)pop.classList.remove('show');}
+
+function renderArch(c){
+  const a = c[archView];
+  const flow = a.flow.map((n,i)=>`
+    <div class="node ${i===1?'hl':''}"><div class="ni">${n[0]}</div><b>${n[1]}</b><small>${n[2]}</small></div>
+    ${i<a.flow.length-1?'<div class="arrow">→</div>':''}`).join("");
+  return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
+  <div class="switch">
+    <button class="${archView==='standalone'?'active':''}" onclick="setArch('standalone')">${c.opt1}</button>
+    <button class="${archView==='newsroom'?'active':''}" onclick="setArch('newsroom')">${c.opt2}</button>
+  </div>
+  <div class="arch show">
+    <div class="card" style="padding:26px">
+      <h2>${a.title}</h2>
+      <p class="lead" style="font-size:16px;margin-bottom:24px">${a.desc}</p>
+      ${archView==='newsroom' ? renderNewsroomDiagram() : `<div class="flow">${flow}</div>`}
+      <div class="grid g2" style="margin-top:24px">
+        ${a.points.map(p=>`<div style="display:flex;gap:10px;color:var(--muted)"><span style="color:var(--good);font-weight:900">✓</span>${p}</div>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPricing(c){
+  const m = priceModel;
+  const swCard=t=>{const p=t[m];return `<div class="price ${t.featured?'feat':''}" ${t.featured?`data-badge="${t.badge}"`:''}>
+      <h3 style="font-size:22px">${t.name}</h3>
+      <div class="tag" style="margin:6px 0 4px">${t.desc}</div>
+      <div class="amt">${p.price} <small>${p.term}</small></div>
+      <ul>${t.features.map(f=>`<li>${f}</li>`).join("")}</ul>
+      <button class="btn ${t.featured?'':'ghost'}" style="width:100%;justify-content:center" onclick="go('contact')">${c.cta}</button>
+    </div>`;};
+  const hwCard=t=>`<div class="price">
+      <img class="hw-img" src="images/fusion.png" alt="NewBlue Fusion appliance">
+      <h3 style="font-size:20px">${t.name}</h3>
+      <div class="tag" style="margin:6px 0 4px">${t.desc}</div>
+      <div class="amt">${t.price} <small>${t.term}</small></div>
+      <ul>${c.hwIncludeBullets.map(f=>`<li class="incl">${f}</li>`).join("")}${t.features.map(f=>`<li>${f}</li>`).join("")}</ul>
+      <button class="btn ghost" style="width:100%;justify-content:center" onclick="go('contact')">${c.cta}</button>
+    </div>`;
+  return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
+
+  <div class="section"><h2>${c.swHeading}</h2><p class="lead" style="font-size:15px;margin-top:2px">${c.swSub}</p></div>
+  <div class="switch" style="margin-top:14px">
+    <button class="${m==='perp'?'active':''}" onclick="setPrice('perp')">${c.models.perp}</button>
+    <button class="${m==='sub'?'active':''}" onclick="setPrice('sub')">${c.models.sub}</button>
+  </div>
+  <p class="note" style="margin:-14px 0 0">${m==='perp'?c.perpNote:c.subNote}</p>
+  <div class="price-grid" style="margin-top:20px">${c.software.map(swCard).join("")}</div>
+
+  ${m==='perp' ? `
+  <div class="section"><h2>${c.hwHeading}</h2><p class="lead" style="font-size:15px;margin-top:2px">${c.hwSub}</p></div>
+  <div class="incl-banner">★ ${c.hwIncludes}</div>
+  <div class="price-grid" style="margin-top:14px">${c.hardware.map(hwCard).join("")}</div>` : ''}
+
+  <p class="note">${c.note}</p>`;
+}
+
+function renderVs(c){
+  return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
+  ${c.groups.map(g=>`
+    <div class="section">
+      <h2>${g.title}</h2>
+      <div class="cmp-wrap" style="margin-top:14px"><table>
+        <thead><tr><th>${c.featureCol}</th><th>${c.colB}</th><th>${c.colC}</th></tr></thead>
+        <tbody>
+          ${g.rows.map(r=>`<tr>
+            <td>${r.f}</td>
+            <td class="nb"><span class="yn y">✓</span> ${r.nb}
+              ${r.catalog?`<div class="demo-row"><button class="chip" onclick="go('catalog')">📁 ${c.viewCatalog}</button></div>`:''}
+              ${r.demos?`<div class="demo-row">${r.demos.map(d=>`<button class="chip" onclick="openVideo('${d.src}','${r.f} — ${d.label}')">▶ ${d.label}</button>`).join('')}</div>`:''}
+            </td>
+            <td>${r.html?`<span class="yn n">✕</span> ${r.html}`:`<span class="yn n">✕</span>`}</td>
+          </tr>`).join("")}
+        </tbody>
+      </table></div>
+    </div>`).join("")}
+  <div class="card section" style="border-color:var(--brand)">
+    <p class="lead" style="font-size:17px;color:var(--ink)">${c.close}</p>
+  </div>`;
+}
+
+function renderCatalog(){
+  const p = CONTENT[lang].catalogPage;
+  return `<div class="eyebrow">${p.eyebrow}</div><h1>${p.h1}</h1><p class="lead">${p.lead}</p>
+  <div class="catalog-frame section">
+    <iframe src="catalog/index.html" title="NewBlue Template Catalog" loading="lazy"></iframe>
+  </div>`;
+}
+
+function renderContact(c){
+  return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
+  <div class="contact-grid section">
+    <div>
+      ${c.fields.map(f=>`<div class="field"><div class="fi">${f[0]}</div><div><b>${f[1]}</b><span>${f[2]}</span></div></div>`).join("")}
+      <button class="btn" style="margin-top:6px" onclick="alert('Demo request — wire to email/form')">${c.cta} →</button>
+    </div>
+    <div class="qr">
+      <div class="box"></div>
+      <b>${c.qrTitle}</b><br><span>${c.qrSub}</span>
+    </div>
+  </div>`;
+}
+
+const RENDER = {home:renderHome,products:renderProducts,arch:renderArch,pricing:renderPricing,catalog:renderCatalog,vs:renderVs,contact:renderContact};
+
+function draw(){
+  const c = CONTENT[lang];
+  // nav
+  document.getElementById("nav").innerHTML = PAGES.map(p=>
+    `<button class="${p===page?'active':''}" onclick="go('${p}')">${c.nav[navKey(p)]}</button>`).join("");
+  // page
+  app.innerHTML = `<section class="page show">${RENDER[page](c[page])}</section>`;
+  document.getElementById("footer").textContent = c.footer;
+  document.documentElement.lang = lang==='pt'?'pt-BR':lang;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function navKey(p){return {home:"home",products:"products",arch:"arch",pricing:"pricing",catalog:"catalog",vs:"vs",contact:"contact"}[p];}
+function go(p){
+  if((location.hash.slice(1))===p){draw();}      // same page: just refresh/scroll up
+  else{location.hash=p;}                          // new page: adds a history entry -> back works
+}
+function setArch(v){archView=v;draw();}
+function setPrice(v){priceModel=v;draw();}
+function setLang(l){lang=l;
+  document.querySelectorAll('#lang button').forEach(b=>b.classList.toggle('active',b.dataset.l===l));
+  draw();}
+
+document.querySelectorAll('#lang button').forEach(b=>b.addEventListener('click',()=>setLang(b.dataset.l)));
+
+// Back/forward + iPad edge-swipe: page is driven by the URL hash (#home, #products, ...)
+window.addEventListener('hashchange',()=>{
+  const p = location.hash.slice(1);
+  page = PAGES.includes(p) ? p : "home";
+  draw();
+});
+page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "home";
+draw();
+</script>
+</body>
+</html>
