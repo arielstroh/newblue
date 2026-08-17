@@ -82,17 +82,18 @@
 
   /* ---------- Hero ---------- */
   .hero{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line);
-    background:linear-gradient(120deg,#0d1730 0%,#0a0e1a 60%);padding:48px}
+    background:linear-gradient(120deg,#0d1730 0%,#0a0e1a 60%);padding:48px;
+    display:flex;align-items:center;justify-content:space-between;gap:30px}
   .hero .glow{position:absolute;inset:auto -10% -40% auto;width:520px;height:520px;
     background:radial-gradient(circle,rgba(0,208,255,.28),transparent 60%);filter:blur(20px);pointer-events:none}
-  .hero-inner{position:relative;max-width:760px}
+  .hero-inner{position:relative;flex:1 1 auto;min-width:0;max-width:760px}
   .pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
   .pill{font-size:13px;font-weight:700;color:var(--muted);padding:8px 14px;border:1px solid var(--line);
     border-radius:99px;background:rgba(255,255,255,.02)}
   .stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:34px}
   .stat b{display:block;font-size:30px;font-weight:850}
   .stat span{color:var(--dim);font-size:13px;font-weight:600}
-  .hero-art{position:absolute;right:34px;top:50%;transform:translateY(-50%);width:360px;max-width:36%;opacity:.95;pointer-events:none}
+  .hero-art{position:relative;flex:0 0 auto;width:32%;max-width:360px;opacity:.95;pointer-events:none}
   .hero-art .bar{transform-box:fill-box;transform-origin:bottom;animation:barpulse 2.6s ease-in-out infinite}
   @keyframes barpulse{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
   @media(max-width:860px){.hero-art{display:none}}
@@ -987,11 +988,7 @@ const STD_HOTSPOTS=[
   {id:'std-captivate-engine',x:414,y:627,w:230,h:80,t:'⚙️ Captivate Engine',d:'The on-air rendering and playout engine, running on NewBlue Fusion or your own hardware. Renders live graphics and outputs the on-air signal (key+fill) over SDI, NDI, ST 2110 or OMT — scalable across channels.'},
   {id:'std-switcher',x:775,y:637,w:135,h:83,t:'🎚️ Production Switcher',d:'The switcher in the signal chain that combines live video with the Captivate graphics output (key+fill) to create the final program output.'},
   {id:'std-conductor-browser',x:414,y:780,w:230,h:70,t:'🌐 Conductor (browser)',d:'Browser-based playout control and preview — cue, take and preview graphics live from any browser, with no dedicated workstation required.'},
-  {id:'std-totalfx',x:762,y:200,w:180,h:315,t:'✍️ Total FX — NLE workstations',d:'NewBlue\'s titling and effects plugins inside your editor. Add titles, lower thirds, transitions and effects during editing — the same look you run live, now in post. Scales to any number of edit seats.'},
-  {id:'std-premiere',x:775,y:285,w:150,h:42,t:'🎬 Adobe Premiere Pro',d:'Edit and finish in Adobe Premiere Pro with NewBlue Total FX titles, transitions and effects applied right on the timeline.'},
-  {id:'std-davinci',x:775,y:345,w:150,h:42,t:'🎬 DaVinci Resolve',d:'Edit and grade in DaVinci Resolve with NewBlue Total FX titling and effects plugins on the timeline.'},
-  {id:'std-avid',x:775,y:405,w:150,h:42,t:'🎬 Avid Media Composer',d:'Craft stories in Avid Media Composer with NewBlue Total FX titles and effects built into the edit.'},
-  {id:'std-edius',x:775,y:465,w:150,h:42,t:'🎬 Grass Valley Edius',d:'Fast-turnaround editing in Grass Valley Edius with NewBlue Total FX titles, transitions and effects.'}
+  {id:'std-totalfx',x:762,y:200,w:180,h:315,t:'✍️ Total FX — NLE workstations',d:'NewBlue\'s titling and effects plugins inside your editor — Adobe Premiere Pro, DaVinci Resolve, Avid Media Composer and Grass Valley Edius. Add titles, lower thirds, transitions and effects during editing: the same look you run live, now in post. Scales to any number of edit seats.'}
 ];
 const STD_I18N={
   pt:{
@@ -1005,11 +1002,7 @@ const STD_I18N={
     'std-captivate-engine':{t:'⚙️ Captivate Engine',d:'O motor de renderização e playout no ar, rodando em NewBlue Fusion ou no seu próprio hardware. Renderiza gráficos ao vivo e entrega o sinal no ar (key+fill) por SDI, NDI, ST 2110 ou OMT — escalável entre canais.'},
     'std-switcher':{t:'🎚️ Switcher de produção',d:'O switcher na cadeia de sinal que combina o vídeo ao vivo com a saída gráfica do Captivate (key+fill) para criar a transmissão final.'},
     'std-conductor-browser':{t:'🌐 Conductor (navegador)',d:'Controle de playout e prévia baseados em navegador — prepare, coloque no ar e visualize gráficos ao vivo de qualquer navegador, sem estação dedicada.'},
-    'std-totalfx':{t:'✍️ Total FX — estações NLE',d:'Os plugins de titulação e efeitos da NewBlue dentro do seu editor. Adicione títulos, geradores de caracteres, transições e efeitos durante a edição — o mesmo visual que você usa ao vivo, agora na pós. Escalável para qualquer número de estações de edição.'},
-    'std-premiere':{t:'🎬 Adobe Premiere Pro',d:'Edite e finalize no Adobe Premiere Pro com títulos, transições e efeitos do NewBlue Total FX aplicados direto na timeline.'},
-    'std-davinci':{t:'🎬 DaVinci Resolve',d:'Edite e faça a correção de cor no DaVinci Resolve com os plugins de titulação e efeitos do NewBlue Total FX na timeline.'},
-    'std-avid':{t:'🎬 Avid Media Composer',d:'Monte histórias no Avid Media Composer com títulos e efeitos do NewBlue Total FX integrados à edição.'},
-    'std-edius':{t:'🎬 Grass Valley Edius',d:'Edição de rápida entrega no Grass Valley Edius com títulos, transições e efeitos do NewBlue Total FX.'}
+    'std-totalfx':{t:'✍️ Total FX — estações NLE',d:'Os plugins de titulação e efeitos da NewBlue dentro do seu editor — Adobe Premiere Pro, DaVinci Resolve, Avid Media Composer e Grass Valley Edius. Adicione títulos, geradores de caracteres, transições e efeitos durante a edição: o mesmo visual que você usa ao vivo, agora na pós. Escalável para qualquer número de estações de edição.'}
   },
   es:{
     'std-after-effects':{t:'🎞️ Adobe After Effects',d:'Herramienta de motion graphics de terceros. Crea composiciones animadas complejas en AE e impórtalas a Captivate como elementos de escena reproducibles en tiempo real, con capas de texto, imagen y video definidas como campos reemplazables y basados en datos.'},
@@ -1022,11 +1015,7 @@ const STD_I18N={
     'std-captivate-engine':{t:'⚙️ Captivate Engine',d:'El motor de renderizado y playout al aire, ejecutándose en NewBlue Fusion o en tu propio hardware. Renderiza gráficos en vivo y entrega la señal al aire (key+fill) por SDI, NDI, ST 2110 u OMT — escalable entre canales.'},
     'std-switcher':{t:'🎚️ Switcher de producción',d:'El switcher en la cadena de señal que combina el video en vivo con la salida gráfica de Captivate (key+fill) para crear la emisión final.'},
     'std-conductor-browser':{t:'🌐 Conductor (navegador)',d:'Control de playout y vista previa basados en navegador — prepara, saca al aire y previsualiza gráficos en vivo desde cualquier navegador, sin estación dedicada.'},
-    'std-totalfx':{t:'✍️ Total FX — estaciones NLE',d:'Los complementos de titulación y efectos de NewBlue dentro de tu editor. Agrega títulos, rótulos, transiciones y efectos durante la edición — el mismo look que usas en vivo, ahora en post. Escalable a cualquier número de estaciones de edición.'},
-    'std-premiere':{t:'🎬 Adobe Premiere Pro',d:'Edita y finaliza en Adobe Premiere Pro con títulos, transiciones y efectos de NewBlue Total FX aplicados directamente en la timeline.'},
-    'std-davinci':{t:'🎬 DaVinci Resolve',d:'Edita y colorea en DaVinci Resolve con los complementos de titulación y efectos de NewBlue Total FX en la timeline.'},
-    'std-avid':{t:'🎬 Avid Media Composer',d:'Crea historias en Avid Media Composer con títulos y efectos de NewBlue Total FX integrados en la edición.'},
-    'std-edius':{t:'🎬 Grass Valley Edius',d:'Edición de entrega rápida en Grass Valley Edius con títulos, transiciones y efectos de NewBlue Total FX.'}
+    'std-totalfx':{t:'✍️ Total FX — estaciones NLE',d:'Los complementos de titulación y efectos de NewBlue dentro de tu editor — Adobe Premiere Pro, DaVinci Resolve, Avid Media Composer y Grass Valley Edius. Agrega títulos, rótulos, transiciones y efectos durante la edición: el mismo look que usas en vivo, ahora en post. Escalable a cualquier número de estaciones de edición.'}
   }
 };
 function renderStandaloneDiagram(){
