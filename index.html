@@ -230,12 +230,12 @@
   .nsr-legend i{width:22px;height:4px;border-radius:2px;display:inline-block}
   @media(max-width:900px){.nsr-cols{grid-template-columns:1fr}}
   /* real SVG diagram + clickable hotspot overlay */
-  .nsr-wrap{position:relative;width:100%;margin:22px auto 0;border:1px solid var(--line);border-radius:14px;background:#fff}
+  .nsr-wrap{position:relative;width:100%;margin:22px auto 0;border:1px solid var(--line);border-radius:14px;background:var(--bg2)}
   .nsr-wrap img{display:block;width:100%;height:auto;border-radius:13px}
   .nsr-hot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:6px;padding:0;transition:.12s}
   .nsr-hot:hover,.nsr-hot:focus{background:rgba(46,139,255,.22);box-shadow:inset 0 0 0 2px var(--brand);outline:none}
   .nsr-hint{color:var(--dim);font-size:13px;text-align:center;margin-top:12px}
-  .nsr-pop{position:absolute;z-index:20;width:280px;max-width:72vw;background:linear-gradient(180deg,var(--panel),var(--bg2));
+  .nsr-pop{position:fixed;z-index:120;width:280px;max-width:72vw;background:linear-gradient(180deg,var(--panel),var(--bg2));
     border:1px solid var(--brand);border-radius:12px;padding:13px 15px;box-shadow:var(--shadow);pointer-events:none;opacity:0;display:none}
   .nsr-pop.show{display:block;opacity:1}
   .nsr-pop b{display:block;font-size:15px;margin-bottom:6px;color:var(--ink)}
@@ -962,9 +962,9 @@ function renderNewsroomDiagram(){
   const hot=h=>{
     const L=(h.x/NSR_VB.w*100).toFixed(2),T=(h.y/NSR_VB.h*100).toFixed(2),
           W=(h.w/NSR_VB.w*100).toFixed(2),H=(h.h/NSR_VB.h*100).toFixed(2);
-    return `<button class="nsr-hot" style="left:${L}%;top:${T}%;width:${W}%;height:${H}%" onclick="openNode('${h.id}')" onmouseenter="hoverNode(event,'${h.id}')" onmouseleave="hideHover()"></button>`;
+    return `<button class="nsr-hot" style="left:${L}%;top:${T}%;width:${W}%;height:${H}%" onclick="openNode('${h.id}')" onmouseenter="hoverNode(event,'${h.id}')"></button>`;
   };
-  return `<div class="nsr-wrap">
+  return `<div class="nsr-wrap" onmouseleave="hideHover()">
     <img src="images/newsroom-diagram.png" onerror="this.onerror=null;this.src='images/newsroom-diagram.svg'" alt="NewBlue Newsroom Ecosystem diagram">
     ${NSR_HOTSPOTS.map(hot).join('')}
     <div id="nsrpop" class="nsr-pop"></div>
@@ -979,16 +979,18 @@ function openNode(id){const n=nsrText(id); if(!n.t)return;
 function closeNode(e,force){if(force||(e&&e.target&&e.target.id==='imodal'))document.getElementById('imodal').classList.remove('show');}
 function hoverNode(e,id){
   const n=nsrText(id); if(!n.t)return;
-  const b=e.currentTarget, pop=document.getElementById('nsrpop'), wrap=b.parentElement; if(!pop)return;
+  const b=e.currentTarget, pop=document.getElementById('nsrpop'); if(!pop)return;
   pop.innerHTML='<b>'+n.t+'</b><span>'+n.d+'</span>';
-  pop.classList.add('show');                                   // show first so width can be measured
-  const pad=10, popW=pop.offsetWidth, wrapW=wrap.clientWidth;
-  let left=b.offsetLeft+b.offsetWidth/2-popW/2;                // centre on the box...
-  left=Math.max(pad, Math.min(left, wrapW-popW-pad));          // ...then clamp inside the diagram
-  pop.style.left=left+'px';
-  const popH=pop.offsetHeight, top=b.offsetTop, bottom=b.offsetTop+b.offsetHeight;
-  if(top-popH-10>=0){ pop.style.top=top+'px'; pop.style.transform='translateY(calc(-100% - 10px))'; } // room above: show above
-  else{ pop.style.top=(bottom+10)+'px'; pop.style.transform='none'; }                                 // else show below
+  pop.classList.add('show');                                   // show first so size can be measured
+  // Position relative to the viewport (fixed) so it never resizes the page or flickers.
+  const r=b.getBoundingClientRect(), pad=10;
+  const popW=pop.offsetWidth, popH=pop.offsetHeight;
+  const vw=window.innerWidth, vh=window.innerHeight;
+  let left=r.left+r.width/2-popW/2;
+  left=Math.max(pad, Math.min(left, vw-popW-pad));
+  let top=(r.top-popH-10>=0) ? r.top-popH-10 : r.bottom+10;    // above if room, else below
+  top=Math.max(pad, Math.min(top, vh-popH-pad));
+  pop.style.left=left+'px'; pop.style.top=top+'px'; pop.style.transform='none';
 }
 function hideHover(){const pop=document.getElementById('nsrpop'); if(pop)pop.classList.remove('show');}
 
