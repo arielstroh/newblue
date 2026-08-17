@@ -184,10 +184,11 @@
   .field{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--line);border-radius:13px;background:var(--panel);margin-bottom:12px}
   .field .fi{width:42px;height:42px;border-radius:10px;background:var(--panel2);display:grid;place-items:center;font-size:20px;flex-shrink:0}
   .field b{display:block;font-size:15px}.field span{color:var(--muted);font-size:14px}
-  .qr{background:#fff;border-radius:16px;padding:20px;text-align:center;color:#0a0e1a}
-  .qr .box{width:180px;height:180px;margin:0 auto 12px;background:
-    repeating-conic-gradient(#0a0e1a 0% 25%,#fff 0% 50%) 0 0/22px 22px;border-radius:8px;opacity:.9}
-  .qr b{color:#0a0e1a;font-size:15px}.qr span{color:#4a5a78;font-size:13px}
+  .qr{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center;
+    display:flex;flex-direction:column;justify-content:center;align-items:center}
+  .qr .box{width:200px;height:200px;margin:0 auto 14px;display:block;border-radius:10px;background:#fff;padding:0;
+    image-rendering:pixelated;box-shadow:0 8px 22px rgba(0,0,0,.4)}
+  .qr b{color:var(--ink);font-size:15px}.qr span{color:var(--muted);font-size:13px}
 
   .catalog-frame{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;height:80vh}
   .catalog-frame iframe{width:100%;height:100%;border:0;display:block}
@@ -446,17 +447,28 @@ const CONTENT = {
     contact:{
       eyebrow:"Contact us",
       h1:"Let's talk about your production",
-      lead:"Reach out for a live demo, pricing, or a tailored deployment plan. [PLACEHOLDER — replace with the BD director's real contact details.]",
-      fields:[
-        ["👤","Business Development","[Name] — [Title]"],
-        ["✉️","Email","[email@newbluefx.com]"],
-        ["📞","Phone / WhatsApp","[+00 000 000 0000]"],
-        ["🌐","Website","newbluefx.com"],
-        ["📍","Meet us","SET Expo — Brazil"]
-      ],
+      lead:"Reach out for a live demo, pricing, or a tailored deployment plan.",
       qrTitle:"Scan to save contact",
-      qrSub:"Works offline — encodes contact details",
-      cta:"Request a live demo"
+      qrSub:"Works offline — saves the contact card",
+      cta:"Request a live demo",
+      people:[
+        {name:"Jeff Fenley", qr:"images/qr-jeff.png", fields:[
+          ["👤","PopUp Media","Jeff Fenley — Director of Business Development"],
+          ["✉️","Email","jeff.fenley@popup.tv"],
+          ["📞","Phone / WhatsApp","+1 (949) 610-4924"],
+          ["🌐","Website","popup.tv · newblueinc.com"],
+          ["📍","Meet us","SET Expo — Brazil"]
+        ]},
+        {name:"Ian Foster", qr:"images/qr-ian.png", fields:[
+          ["👤","NewBlue","Ian Foster — Global Sales Director"],
+          ["📞","Office","+1 (858) 434-7004"],
+          ["📱","Mobile","+1 (530) 557-0886"],
+          ["✉️","Email","ianf@newblueinc.com"],
+          ["🌐","Website","newblueinc.com"],
+          ["🔗","Social","Facebook · YouTube · X · LinkedIn"],
+          ["📍","Meet us","SET Expo — Brazil"]
+        ]}
+      ]
     }
   }
 };
@@ -596,17 +608,28 @@ CONTENT.pt = {
   contact:{
     eyebrow:"Contato",
     h1:"Vamos falar sobre sua produção",
-    lead:"Entre em contato para uma demonstração ao vivo, preços ou um plano de implantação sob medida. [PLACEHOLDER — substituir pelos dados reais do diretor de negócios.]",
-    fields:[
-      ["👤","Desenvolvimento de Negócios","[Nome] — [Cargo]"],
-      ["✉️","E-mail","[email@newbluefx.com]"],
-      ["📞","Telefone / WhatsApp","[+00 000 000 0000]"],
-      ["🌐","Site","newbluefx.com"],
-      ["📍","Encontre-nos","SET Expo — Brasil"]
-    ],
+    lead:"Entre em contato para uma demonstração ao vivo, preços ou um plano de implantação sob medida.",
     qrTitle:"Escaneie para salvar o contato",
-    qrSub:"Funciona offline — codifica os dados de contato",
-    cta:"Solicitar demonstração ao vivo"
+    qrSub:"Funciona offline — salva o cartão de contato",
+    cta:"Solicitar demonstração ao vivo",
+    people:[
+      {name:"Jeff Fenley", qr:"images/qr-jeff.png", fields:[
+        ["👤","PopUp Media","Jeff Fenley — Diretor de Desenvolvimento de Negócios"],
+        ["✉️","E-mail","jeff.fenley@popup.tv"],
+        ["📞","Telefone / WhatsApp","+1 (949) 610-4924"],
+        ["🌐","Site","popup.tv · newblueinc.com"],
+        ["📍","Encontre-nos","SET Expo — Brasil"]
+      ]},
+      {name:"Ian Foster", qr:"images/qr-ian.png", fields:[
+        ["👤","NewBlue","Ian Foster — Diretor Global de Vendas"],
+        ["📞","Escritório","+1 (858) 434-7004"],
+        ["📱","Celular","+1 (530) 557-0886"],
+        ["✉️","E-mail","ianf@newblueinc.com"],
+        ["🌐","Site","newblueinc.com"],
+        ["🔗","Redes sociais","Facebook · YouTube · X · LinkedIn"],
+        ["📍","Encontre-nos","SET Expo — Brasil"]
+      ]}
+    ]
   }
 };
 
@@ -745,17 +768,28 @@ CONTENT.es = {
   contact:{
     eyebrow:"Contacto",
     h1:"Hablemos de tu producción",
-    lead:"Contáctanos para una demostración en vivo, precios o un plan de implementación a medida. [PLACEHOLDER — reemplazar por los datos reales del director de negocios.]",
-    fields:[
-      ["👤","Desarrollo de Negocios","[Nombre] — [Cargo]"],
-      ["✉️","Correo","[email@newbluefx.com]"],
-      ["📞","Teléfono / WhatsApp","[+00 000 000 0000]"],
-      ["🌐","Sitio web","newbluefx.com"],
-      ["📍","Encuéntranos","SET Expo — Brasil"]
-    ],
+    lead:"Contáctanos para una demostración en vivo, precios o un plan de implementación a medida.",
     qrTitle:"Escanea para guardar el contacto",
-    qrSub:"Funciona offline — codifica los datos de contacto",
-    cta:"Solicitar demostración en vivo"
+    qrSub:"Funciona offline — guarda la tarjeta de contacto",
+    cta:"Solicitar demostración en vivo",
+    people:[
+      {name:"Jeff Fenley", qr:"images/qr-jeff.png", fields:[
+        ["👤","PopUp Media","Jeff Fenley — Director de Desarrollo de Negocios"],
+        ["✉️","Correo","jeff.fenley@popup.tv"],
+        ["📞","Teléfono / WhatsApp","+1 (949) 610-4924"],
+        ["🌐","Sitio web","popup.tv · newblueinc.com"],
+        ["📍","Encuéntranos","SET Expo — Brasil"]
+      ]},
+      {name:"Ian Foster", qr:"images/qr-ian.png", fields:[
+        ["👤","NewBlue","Ian Foster — Director Global de Ventas"],
+        ["📞","Oficina","+1 (858) 434-7004"],
+        ["📱","Móvil","+1 (530) 557-0886"],
+        ["✉️","Correo","ianf@newblueinc.com"],
+        ["🌐","Sitio web","newblueinc.com"],
+        ["🔗","Redes sociales","Facebook · YouTube · X · LinkedIn"],
+        ["📍","Encuéntranos","SET Expo — Brasil"]
+      ]}
+    ]
   }
 };
 
@@ -765,6 +799,7 @@ let lang = "en";
 let page = "home";
 let archView = "standalone";
 let priceModel = "perp";
+let contactPerson = 0;
 const app = document.getElementById("app");
 const PAGES = ["home","products","arch","pricing","catalog","vs","contact"];
 const esc = s => String(s);
@@ -1144,14 +1179,18 @@ function renderCatalog(){
 }
 
 function renderContact(c){
+  const p = c.people[contactPerson] || c.people[0];
   return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
-  <div class="contact-grid section">
+  <div class="switch" style="margin-top:16px">
+    ${c.people.map((pp,i)=>`<button class="${i===contactPerson?'active':''}" onclick="setPerson(${i})">${pp.name}</button>`).join('')}
+  </div>
+  <div class="contact-grid section" style="margin-top:20px">
     <div>
-      ${c.fields.map(f=>`<div class="field"><div class="fi">${f[0]}</div><div><b>${f[1]}</b><span>${f[2]}</span></div></div>`).join("")}
+      ${p.fields.map(f=>`<div class="field"><div class="fi">${f[0]}</div><div><b>${f[1]}</b><span>${f[2]}</span></div></div>`).join("")}
       <button class="btn" style="margin-top:6px" onclick="alert('Demo request — wire to email/form')">${c.cta} →</button>
     </div>
     <div class="qr">
-      <div class="box"></div>
+      <img class="box" src="${p.qr}" alt="Scan to save ${p.name}'s contact">
       <b>${c.qrTitle}</b><br><span>${c.qrSub}</span>
     </div>
   </div>`;
@@ -1177,6 +1216,7 @@ function go(p){
 }
 function setArch(v){archView=v;draw();}
 function setPrice(v){priceModel=v;draw();}
+function setPerson(i){contactPerson=i;draw();}
 function setLang(l){lang=l;
   document.querySelectorAll('#lang button').forEach(b=>b.classList.toggle('active',b.dataset.l===l));
   draw();}
