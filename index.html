@@ -953,12 +953,14 @@ const NSR_I18N = {
     'cloud-aws':{t:'☁️ Instancia AWS Cloud G5 EC2',d:'Un host en la nube acelerado por GPU (EC2 G5, GPUs NVIDIA A10G) para ejecutar el motor de render y/o el preview server en AWS. Aporta la potencia de GPU que el renderizado en tiempo real de Captivate necesita cuando la planta se despliega en la nube en lugar del hardware Fusion 3 on-premises.'}
   }
 };
+let DIAG={hs:NSR_HOTSPOTS,i18n:NSR_I18N};   // current diagram's hotspot set (newsroom or standalone)
 function nsrText(id){
-  const base=NSR_HOTSPOTS.find(h=>h.id===id)||{};
-  const tr=(NSR_I18N[lang]&&NSR_I18N[lang][id])||{};
+  const base=DIAG.hs.find(h=>h.id===id)||{};
+  const tr=(DIAG.i18n[lang]&&DIAG.i18n[lang][id])||{};
   return {t:tr.t||base.t, d:tr.d||base.d};
 }
 function renderNewsroomDiagram(){
+  DIAG={hs:NSR_HOTSPOTS,i18n:NSR_I18N};
   const hot=h=>{
     const L=(h.x/NSR_VB.w*100).toFixed(2),T=(h.y/NSR_VB.h*100).toFixed(2),
           W=(h.w/NSR_VB.w*100).toFixed(2),H=(h.h/NSR_VB.h*100).toFixed(2);
@@ -967,6 +969,75 @@ function renderNewsroomDiagram(){
   return `<div class="nsr-wrap" onmouseleave="hideHover()">
     <img src="images/newsroom-diagram.png" onerror="this.onerror=null;this.src='images/newsroom-diagram.svg'" alt="NewBlue Newsroom Ecosystem diagram">
     ${NSR_HOTSPOTS.map(hot).join('')}
+    <div id="nsrpop" class="nsr-pop"></div>
+  </div>
+  <p class="nsr-hint">${CONTENT[lang].arch.diagramHint}</p>`;
+}
+/* ---- Standalone diagram: PNG + clickable hotspots (from the Captivate System drawio) ---- */
+const STD_VB={x0:50,y0:22,w:1050,h:952};
+const STD_HOTSPOTS=[
+  {id:'std-after-effects',x:172,y:184,w:127,h:42,t:'🎞️ Adobe After Effects',d:'Third-party motion-graphics tool. Build complex animated compositions in AE and import them into Captivate as real-time-playable scene elements, with text, image and video layers set as replaceable, data-driven fields.'},
+  {id:'std-photoshop',x:172,y:244,w:127,h:42,t:'🖼️ Adobe Photoshop',d:'Third-party raster tool. Layered stills, backgrounds, textures and touch-ups are created in PSD and imported into Captivate designs as assets.'},
+  {id:'std-illustrator',x:172,y:304,w:127,h:42,t:'✒️ Adobe Illustrator',d:'Third-party vector tool. Logos, icons, maps and other scalable vector artwork are prepared here and brought into the design pipeline.'},
+  {id:'std-captivate-designer',x:414,y:225,w:230,h:80,t:'🎨 Captivate Designer',d:'The full graphics authoring application where you build Captivate scenes: 2D/3D lower thirds, bugs, crawls, tickers, scoreboards and layouts, with data-binding and animation. Design from scratch or import existing artwork.'},
+  {id:'std-stencil',x:414,y:325,w:230,h:80,t:'🔒 Stencil',d:'Designer-built, brand-locked templating layer. Publishes any Captivate graphic as a controlled fill-in template — exposing only the fields the operator should edit and locking the rest to protect brand.'},
+  {id:'std-vault',x:414,y:425,w:230,h:80,t:'🗄️ Vault',d:'Central store for projects, templates and assets, shared across the Captivate system with version history and one-click updates.'},
+  {id:'std-conductor',x:414,y:527,w:230,h:80,t:'🎛️ Conductor',d:'Live playout control with built-in preview. The operator cues and takes graphics to air and checks them before they go live — all from the one Captivate system.'},
+  {id:'std-captivate-engine',x:414,y:627,w:230,h:80,t:'⚙️ Captivate Engine',d:'The on-air rendering and playout engine, running on NewBlue Fusion or your own hardware. Renders live graphics and outputs the on-air signal (key+fill) over SDI, NDI, ST 2110 or OMT — scalable across channels.'},
+  {id:'std-switcher',x:775,y:637,w:135,h:83,t:'🎚️ Production Switcher',d:'The switcher in the signal chain that combines live video with the Captivate graphics output (key+fill) to create the final program output.'},
+  {id:'std-conductor-browser',x:414,y:780,w:230,h:70,t:'🌐 Conductor (browser)',d:'Browser-based playout control and preview — cue, take and preview graphics live from any browser, with no dedicated workstation required.'},
+  {id:'std-totalfx',x:762,y:200,w:180,h:315,t:'✍️ Total FX — NLE workstations',d:'NewBlue\'s titling and effects plugins inside your editor. Add titles, lower thirds, transitions and effects during editing — the same look you run live, now in post. Scales to any number of edit seats.'},
+  {id:'std-premiere',x:775,y:285,w:150,h:42,t:'🎬 Adobe Premiere Pro',d:'Edit and finish in Adobe Premiere Pro with NewBlue Total FX titles, transitions and effects applied right on the timeline.'},
+  {id:'std-davinci',x:775,y:345,w:150,h:42,t:'🎬 DaVinci Resolve',d:'Edit and grade in DaVinci Resolve with NewBlue Total FX titling and effects plugins on the timeline.'},
+  {id:'std-avid',x:775,y:405,w:150,h:42,t:'🎬 Avid Media Composer',d:'Craft stories in Avid Media Composer with NewBlue Total FX titles and effects built into the edit.'},
+  {id:'std-edius',x:775,y:465,w:150,h:42,t:'🎬 Grass Valley Edius',d:'Fast-turnaround editing in Grass Valley Edius with NewBlue Total FX titles, transitions and effects.'}
+];
+const STD_I18N={
+  pt:{
+    'std-after-effects':{t:'🎞️ Adobe After Effects',d:'Ferramenta de motion graphics de terceiros. Crie composições animadas complexas no AE e importe-as para o Captivate como elementos de cena reproduzíveis em tempo real, com camadas de texto, imagem e vídeo definidas como campos substituíveis e orientados a dados.'},
+    'std-photoshop':{t:'🖼️ Adobe Photoshop',d:'Ferramenta raster de terceiros. Imagens estáticas em camadas, fundos, texturas e retoques são criados em PSD e importados para os designs do Captivate como assets.'},
+    'std-illustrator':{t:'✒️ Adobe Illustrator',d:'Ferramenta vetorial de terceiros. Logotipos, ícones, mapas e outras artes vetoriais escaláveis são preparados aqui e trazidos para o pipeline de design.'},
+    'std-captivate-designer':{t:'🎨 Captivate Designer',d:'O aplicativo completo de criação de gráficos onde você monta as cenas do Captivate: geradores de caracteres 2D/3D, bugs, crawls, tickers, placares e layouts, com vínculo de dados e animação. Crie do zero ou importe artes existentes.'},
+    'std-stencil':{t:'🔒 Stencil',d:'Camada de templates criada pelo designer e bloqueada à marca. Publica qualquer gráfico do Captivate como um template de preenchimento controlado — expondo apenas os campos que o operador deve editar e bloqueando o restante para proteger a marca.'},
+    'std-vault':{t:'🗄️ Vault',d:'Armazenamento central para projetos, templates e assets, compartilhado por todo o sistema Captivate, com histórico de versões e atualizações com um clique.'},
+    'std-conductor':{t:'🎛️ Conductor',d:'Controle de playout ao vivo com prévia integrada. O operador prepara e coloca gráficos no ar e os confere antes de irem ao vivo — tudo a partir do mesmo sistema Captivate.'},
+    'std-captivate-engine':{t:'⚙️ Captivate Engine',d:'O motor de renderização e playout no ar, rodando em NewBlue Fusion ou no seu próprio hardware. Renderiza gráficos ao vivo e entrega o sinal no ar (key+fill) por SDI, NDI, ST 2110 ou OMT — escalável entre canais.'},
+    'std-switcher':{t:'🎚️ Switcher de produção',d:'O switcher na cadeia de sinal que combina o vídeo ao vivo com a saída gráfica do Captivate (key+fill) para criar a transmissão final.'},
+    'std-conductor-browser':{t:'🌐 Conductor (navegador)',d:'Controle de playout e prévia baseados em navegador — prepare, coloque no ar e visualize gráficos ao vivo de qualquer navegador, sem estação dedicada.'},
+    'std-totalfx':{t:'✍️ Total FX — estações NLE',d:'Os plugins de titulação e efeitos da NewBlue dentro do seu editor. Adicione títulos, geradores de caracteres, transições e efeitos durante a edição — o mesmo visual que você usa ao vivo, agora na pós. Escalável para qualquer número de estações de edição.'},
+    'std-premiere':{t:'🎬 Adobe Premiere Pro',d:'Edite e finalize no Adobe Premiere Pro com títulos, transições e efeitos do NewBlue Total FX aplicados direto na timeline.'},
+    'std-davinci':{t:'🎬 DaVinci Resolve',d:'Edite e faça a correção de cor no DaVinci Resolve com os plugins de titulação e efeitos do NewBlue Total FX na timeline.'},
+    'std-avid':{t:'🎬 Avid Media Composer',d:'Monte histórias no Avid Media Composer com títulos e efeitos do NewBlue Total FX integrados à edição.'},
+    'std-edius':{t:'🎬 Grass Valley Edius',d:'Edição de rápida entrega no Grass Valley Edius com títulos, transições e efeitos do NewBlue Total FX.'}
+  },
+  es:{
+    'std-after-effects':{t:'🎞️ Adobe After Effects',d:'Herramienta de motion graphics de terceros. Crea composiciones animadas complejas en AE e impórtalas a Captivate como elementos de escena reproducibles en tiempo real, con capas de texto, imagen y video definidas como campos reemplazables y basados en datos.'},
+    'std-photoshop':{t:'🖼️ Adobe Photoshop',d:'Herramienta ráster de terceros. Imágenes fijas por capas, fondos, texturas y retoques se crean en PSD y se importan a los diseños de Captivate como recursos.'},
+    'std-illustrator':{t:'✒️ Adobe Illustrator',d:'Herramienta vectorial de terceros. Logotipos, iconos, mapas y otras ilustraciones vectoriales escalables se preparan aquí y se incorporan al pipeline de diseño.'},
+    'std-captivate-designer':{t:'🎨 Captivate Designer',d:'La aplicación completa de creación de gráficos donde construyes las escenas de Captivate: rótulos 2D/3D, bugs, crawls, tickers, marcadores y layouts, con vinculación de datos y animación. Diseña desde cero o importa arte existente.'},
+    'std-stencil':{t:'🔒 Stencil',d:'Capa de plantillas creada por el diseñador y bloqueada a la marca. Publica cualquier gráfico de Captivate como una plantilla controlada para rellenar — exponiendo solo los campos que el operador debe editar y bloqueando el resto para proteger la marca.'},
+    'std-vault':{t:'🗄️ Vault',d:'Almacén central para proyectos, plantillas y recursos, compartido por todo el sistema Captivate, con historial de versiones y actualizaciones con un clic.'},
+    'std-conductor':{t:'🎛️ Conductor',d:'Control de playout en vivo con vista previa integrada. El operador prepara y saca gráficos al aire y los revisa antes de que salgan en vivo — todo desde el mismo sistema Captivate.'},
+    'std-captivate-engine':{t:'⚙️ Captivate Engine',d:'El motor de renderizado y playout al aire, ejecutándose en NewBlue Fusion o en tu propio hardware. Renderiza gráficos en vivo y entrega la señal al aire (key+fill) por SDI, NDI, ST 2110 u OMT — escalable entre canales.'},
+    'std-switcher':{t:'🎚️ Switcher de producción',d:'El switcher en la cadena de señal que combina el video en vivo con la salida gráfica de Captivate (key+fill) para crear la emisión final.'},
+    'std-conductor-browser':{t:'🌐 Conductor (navegador)',d:'Control de playout y vista previa basados en navegador — prepara, saca al aire y previsualiza gráficos en vivo desde cualquier navegador, sin estación dedicada.'},
+    'std-totalfx':{t:'✍️ Total FX — estaciones NLE',d:'Los complementos de titulación y efectos de NewBlue dentro de tu editor. Agrega títulos, rótulos, transiciones y efectos durante la edición — el mismo look que usas en vivo, ahora en post. Escalable a cualquier número de estaciones de edición.'},
+    'std-premiere':{t:'🎬 Adobe Premiere Pro',d:'Edita y finaliza en Adobe Premiere Pro con títulos, transiciones y efectos de NewBlue Total FX aplicados directamente en la timeline.'},
+    'std-davinci':{t:'🎬 DaVinci Resolve',d:'Edita y colorea en DaVinci Resolve con los complementos de titulación y efectos de NewBlue Total FX en la timeline.'},
+    'std-avid':{t:'🎬 Avid Media Composer',d:'Crea historias en Avid Media Composer con títulos y efectos de NewBlue Total FX integrados en la edición.'},
+    'std-edius':{t:'🎬 Grass Valley Edius',d:'Edición de entrega rápida en Grass Valley Edius con títulos, transiciones y efectos de NewBlue Total FX.'}
+  }
+};
+function renderStandaloneDiagram(){
+  DIAG={hs:STD_HOTSPOTS,i18n:STD_I18N};
+  const hot=h=>{
+    const L=((h.x-STD_VB.x0)/STD_VB.w*100).toFixed(2),T=((h.y-STD_VB.y0)/STD_VB.h*100).toFixed(2),
+          W=(h.w/STD_VB.w*100).toFixed(2),H=(h.h/STD_VB.h*100).toFixed(2);
+    return `<button class="nsr-hot" style="left:${L}%;top:${T}%;width:${W}%;height:${H}%" onclick="openNode('${h.id}')" onmouseenter="hoverNode(event,'${h.id}')"></button>`;
+  };
+  return `<div class="nsr-wrap" onmouseleave="hideHover()">
+    <img src="images/standalone-diagram.png" alt="NewBlue Captivate Standalone System diagram">
+    ${STD_HOTSPOTS.map(hot).join('')}
     <div id="nsrpop" class="nsr-pop"></div>
   </div>
   <p class="nsr-hint">${CONTENT[lang].arch.diagramHint}</p>`;
@@ -1008,7 +1079,7 @@ function renderArch(c){
     <div class="card" style="padding:26px">
       <h2>${a.title}</h2>
       <p class="lead" style="font-size:16px;margin-bottom:24px">${a.desc}</p>
-      ${archView==='newsroom' ? renderNewsroomDiagram() : `<div class="flow">${flow}</div>`}
+      ${archView==='newsroom' ? renderNewsroomDiagram() : renderStandaloneDiagram()}
       <div class="grid g2" style="margin-top:24px">
         ${a.points.map(p=>`<div style="display:flex;gap:10px;color:var(--muted)"><span style="color:var(--good);font-weight:900">✓</span>${p}</div>`).join("")}
       </div>
