@@ -299,6 +299,8 @@
   </div>
 </div>
 
+<div id="nsrpop" class="nsr-pop"></div>
+
 <footer id="footer"></footer>
 
 <script>
@@ -969,7 +971,6 @@ function renderNewsroomDiagram(){
   return `<div class="nsr-wrap" onmouseleave="hideHover()">
     <img src="images/newsroom-diagram.png" onerror="this.onerror=null;this.src='images/newsroom-diagram.svg'" alt="NewBlue Newsroom Ecosystem diagram">
     ${NSR_HOTSPOTS.map(hot).join('')}
-    <div id="nsrpop" class="nsr-pop"></div>
   </div>
   <p class="nsr-hint">${CONTENT[lang].arch.diagramHint}</p>`;
 }
@@ -1038,7 +1039,6 @@ function renderStandaloneDiagram(){
   return `<div class="nsr-wrap" onmouseleave="hideHover()">
     <img src="images/standalone-diagram.png" alt="NewBlue Captivate Standalone System diagram">
     ${STD_HOTSPOTS.map(hot).join('')}
-    <div id="nsrpop" class="nsr-pop"></div>
   </div>
   <p class="nsr-hint">${CONTENT[lang].arch.diagramHint}</p>`;
 }
