@@ -1,10 +1,8 @@
-/* NewBlue marketing site — offline service worker.
-   After the first online load, the site (pages, logos, diagrams, catalog, images)
-   works without a connection. Videos stream from the network when online; they are
-   not force-cached because iOS limits large media caches. */
-const CACHE = 'newblue-v1';
+/* NewBlue marketing site — offline service worker (v2).
+   After the first online load, the whole site works offline — including videos.
+   Videos are cached in full and served back to iOS's byte-range requests from cache. */
+const CACHE = 'newblue-v2';
 
-// Core UI assets precached on first visit so the whole site renders offline.
 const PRECACHE = [
   './',
   'index.html',
@@ -28,7 +26,7 @@ const PRECACHE = [
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE)
-      .then(c => Promise.allSettled(PRECACHE.map(u => c.add(u))))  // don't fail install if one asset is missing
+      .then(c => Promise.allSettled(PRECACHE.map(u => c.add(u))))
       .then(() => self.skipWaiting())
   );
 });
@@ -41,18 +39,56 @@ self.addEventListener('activate', e => {
   );
 });
 
+/* Cache a video in full, then satisfy byte-range requests by slicing the cached copy. */
+async function handleVideo(req) {
+  const cache = await caches.open(CACHE);
+  let full = await cache.match(req.url);
+  if (!full) {
+    try {
+      const res = await fetch(req.url);                 // full GET (no range)
+      if (res && res.status === 200) {
+        await cache.put(req.url, res.clone());
+        full = res;
+      } else {
+        return fetch(req);                              // couldn't cache — passthrough
+      }
+    } catch (err) {
+      return new Response('', { status: 504, statusText: 'Offline (video not cached yet)' });
+    }
+  }
+  const range = req.headers.get('range');
+  if (!range) return full;
+
+  const buf = await full.clone().arrayBuffer();
+  const size = buf.byteLength;
+  const m = /bytes=(\d*)-(\d*)/.exec(range) || [];
+  let start = m[1] ? parseInt(m[1], 10) : 0;
+  let end = m[2] ? parseInt(m[2], 10) : size - 1;
+  if (isNaN(start) || start < 0) start = 0;
+  if (isNaN(end) || end >= size) end = size - 1;
+  const body = buf.slice(start, end + 1);
+  return new Response(body, {
+    status: 206,
+    statusText: 'Partial Content',
+    headers: {
+      'Content-Type': (full.headers.get('Content-Type') || 'video/mp4'),
+      'Content-Range': `bytes ${start}-${end}/${size}`,
+      'Content-Length': String(end - start + 1),
+      'Accept-Ranges': 'bytes'
+    }
+  });
+}
+
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
-  if (req.headers.has('range')) return;              // let the browser handle ranged (video) requests directly
-
   const url = new URL(req.url);
-  const isHTML = req.mode === 'navigate' ||
-                 url.pathname.endsWith('/') ||
-                 url.pathname.endsWith('index.html');
 
+  if (url.pathname.endsWith('.mp4')) { e.respondWith(handleVideo(req)); return; }
+  if (req.headers.has('range')) return;                 // other ranged requests → straight to network
+
+  const isHTML = req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('index.html');
   if (isHTML) {
-    // Network-first for pages: newest content when online, cached fallback when offline.
     e.respondWith(
       fetch(req)
         .then(res => { caches.open(CACHE).then(c => c.put(req, res.clone())); return res; })
@@ -61,7 +97,6 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Cache-first for assets; fetch and store on first use (runtime caching).
   e.respondWith(
     caches.match(req).then(cached => {
       if (cached) return cached;

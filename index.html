@@ -1265,7 +1265,12 @@ draw();
   /* Offline cache: works only over http/https (ignored on file://). */
   if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     window.addEventListener('load', function () {
-      navigator.serviceWorker.register('sw.js').catch(function () {});
+      navigator.serviceWorker.register('sw.js').then(function () {
+        // Warm the video cache in the background while online (each downloads once, then is cached).
+        if (!navigator.onLine) return;
+        var vids = ['sizzle.mp4','ae-import.mp4','psd-import-jbar.mp4','psd-import-schedule.mp4','psd-import-lineup.mp4','spreadsheet-playout.mp4','squeeze-fedex.mp4','squeeze-cocacola.mp4','video-playback.mp4'];
+        (function warm(i){ if(i>=vids.length) return; fetch('videos/'+vids[i]).catch(function(){}).then(function(){ setTimeout(function(){ warm(i+1); }, 500); }); })(0);
+      }).catch(function () {});
     });
   }
 </script>
