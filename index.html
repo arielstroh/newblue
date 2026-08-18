@@ -154,8 +154,14 @@
 
   /* ---------- Pricing ---------- */
   .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  .price{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:26px;position:relative}
+  .price{background:linear-gradient(180deg,var(--panel),var(--bg2));border:1px solid var(--line);border-radius:18px;padding:26px;position:relative;display:flex;flex-direction:column}
+  .price .btn{margin-top:auto}
+  .price-logo{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:8px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.3);z-index:2}
+  .price-logo img{width:100%;height:100%;object-fit:cover;display:block}
   .price.feat{border-color:var(--brand);box-shadow:0 20px 50px rgba(46,139,255,.22)}
+  .price.upgrade{border-color:#8b5cf6;box-shadow:inset 0 0 0 1px #8b5cf6,0 16px 40px rgba(139,92,246,.22)}
+  .price.upgrade .amt{color:#c4b5fd}
+  .price.upgrade .btn{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:#fff;box-shadow:0 10px 26px rgba(139,92,246,.4)}
   .price.feat:before{content:attr(data-badge);position:absolute;top:-12px;left:50%;transform:translateX(-50%);
     background:var(--grad);color:#03203f;font-size:12px;font-weight:800;padding:5px 14px;border-radius:99px;white-space:nowrap}
   .price .amt{font-size:38px;font-weight:850;margin:8px 0 2px}
@@ -164,7 +170,7 @@
   .price li{color:var(--muted);font-size:14.5px;padding-left:24px;position:relative}
   .price li:before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:900}
   .note{color:var(--dim);font-size:13px;margin-top:18px}
-  .hw-img{width:100%;height:auto;margin-bottom:12px;background:transparent}
+  .hw-img{width:80%;height:auto;margin:0 auto 12px;background:transparent;align-self:center}
   .incl-banner{margin-top:14px;padding:12px 16px;border:1px solid var(--brand);border-radius:12px;
     background:rgba(46,139,255,.1);color:var(--ink);font-size:14.5px;font-weight:600}
   .price li.incl{color:var(--brand2);font-weight:700}
@@ -397,22 +403,26 @@ const CONTENT = {
       subNote:"Monthly price, billed annually.",
       cta:"Contact sales",
       software:[
-        {name:"NewBlue Captivate",desc:"Flagship real-time, data-driven broadcast graphics platform.",featured:true,badge:"Most popular",
+        {name:"NewBlue Captivate",logo:"images/logo-captivate.png",desc:"Flagship real-time, data-driven broadcast graphics platform.",featured:false,badge:"",
           perp:{price:"$4,999",term:"one-time"}, sub:{price:"$166",term:"/mo, billed annually"},
-          features:["Real-time data-driven graphics","Live control & automation","Templates included"]},
-        {name:"NewBlue Total FX",desc:"Titles, transitions and video effects toolset.",featured:false,badge:"",
-          perp:{price:"$799",term:"one-time"}, sub:{price:"$24",term:"/mo, billed annually"},
-          features:["Titles & lower thirds","Transitions & effects","Plugin for major NLEs: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]},
-        {name:"NewBlue Newsroom",desc:"End-to-end newsroom graphics ecosystem, sized to your facility.",featured:false,badge:"",
+          features:["Real-time data-driven graphics","Self-contained engine & control application","Templates included"]},
+        {name:"NewBlue Captivate Enterprise",logo:"images/logo-enterprise.png",desc:"Captivate with automation, immersive control and web-based operation.",featured:true,badge:"Most popular",
+          perp:{price:"$14,999",term:"one-time"}, sub:{price:"$650",term:"/mo, billed annually"},
+          features:["Everything in Captivate","Automation & data-driven controls","Controls studio screens, video walls & immersive broadcast","Web-based control application","Priority support"]},
+        {name:"NewBlue Newsroom",logo:"images/logo-newsroom.png",desc:"End-to-end newsroom graphics ecosystem, sized to your facility.",featured:false,badge:"",
           perp:{price:"Quote",term:"tailored deployment"}, sub:{price:"Quote",term:"tailored deployment"},
-          features:["NRCS / MOS integration","Multi-channel & multi-operator","Enterprise support & SLA"]}
+          features:["NRCS / MOS integration","Multi-channel & multi-operator","Enterprise support & SLA"]},
+        {name:"NewBlue Total FX",logo:"images/logo-totalfx.png",desc:"Titles, transitions and video effects toolset.",featured:false,badge:"",
+          perp:{price:"$799",term:"one-time"}, sub:{price:"$24",term:"/mo, billed annually"},
+          features:["Titles & lower thirds","Transitions & effects","Plugin for major NLEs: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]}
       ],
       hardware:[
-        {name:"Fusion NDI",desc:"Turnkey on-air graphics — NDI I/O.",price:"$11,995",term:"one-time",features:["Turnkey hardware + software","NDI in/out","On-air ready"]},
-        {name:"Fusion SDI",desc:"Turnkey on-air graphics — SDI I/O.",price:"$14,995",term:"one-time",features:["Turnkey hardware + software","SDI in/out","On-air ready"]},
-        {name:"Fusion 2110",desc:"Turnkey on-air graphics — ST 2110 IP.",price:"$15,995",term:"one-time",features:["Turnkey hardware + software","ST 2110 IP","On-air ready"]},
-        {name:"Fusion Extreme 4K SDI",desc:"4K turnkey on-air graphics — SDI I/O.",price:"$18,995",term:"one-time",features:["4K / UHD","SDI in/out","High-performance engine"]},
-        {name:"Fusion Extreme 4K 2110",desc:"4K turnkey on-air graphics — ST 2110 IP.",price:"$19,495",term:"one-time",features:["4K / UHD","ST 2110 IP","High-performance engine"]}
+        {name:"Fusion NDI",logo:"images/logo-fusion.png",desc:"Turnkey on-air graphics — NDI I/O.",price:"$11,995",term:"one-time",features:["Turnkey hardware + software","NDI in/out","On-air ready"]},
+        {name:"Fusion SDI",logo:"images/logo-fusion.png",desc:"Turnkey on-air graphics — SDI I/O.",price:"$14,995",term:"one-time",features:["Turnkey hardware + software","SDI in/out","On-air ready"]},
+        {name:"Fusion 2110",logo:"images/logo-fusion.png",desc:"Turnkey on-air graphics — ST 2110 IP.",price:"$15,995",term:"one-time",features:["Turnkey hardware + software","ST 2110 IP","On-air ready"]},
+        {name:"Fusion Extreme 4K SDI",logo:"images/logo-fusion.png",desc:"4K turnkey on-air graphics — SDI I/O.",price:"$18,995",term:"one-time",features:["4K / UHD","SDI in/out","High-performance engine"]},
+        {name:"Fusion Extreme 4K 2110",logo:"images/logo-fusion.png",desc:"4K turnkey on-air graphics — ST 2110 IP.",price:"$19,495",term:"one-time",features:["4K / UHD","ST 2110 IP","High-performance engine"]},
+        {name:"Upgrade to Enterprise",logo:"images/logo-enterprise.png",accent:"purple",desc:"Upgrade the Captivate license included with any Fusion to Captivate Enterprise.",price:"$4,999",term:"license upgrade",features:["Captivate → Captivate Enterprise license","Adds automation & data controls","Studio screens, video walls & immersive broadcast","Web-based control application"]}
       ],
       note:"Prices in USD. Subscription shows the monthly price, billed annually. NewBlue Newsroom is quoted per deployment. Volume and regional pricing available on request."
     },
@@ -558,22 +568,26 @@ CONTENT.pt = {
     subNote:"Preço mensal, cobrado anualmente.",
     cta:"Falar com vendas",
     software:[
-      {name:"NewBlue Captivate",desc:"Plataforma de gráficos de broadcast em tempo real e orientada a dados — carro-chefe.",featured:true,badge:"Mais popular",
+      {name:"NewBlue Captivate",logo:"images/logo-captivate.png",desc:"Plataforma de gráficos de broadcast em tempo real e orientada a dados — carro-chefe.",featured:false,badge:"",
         perp:{price:"$4,999",term:"único"}, sub:{price:"$166",term:"/mês, cobrado anualmente"},
-        features:["Gráficos em tempo real orientados a dados","Controle ao vivo e automação","Templates incluídos"]},
-      {name:"NewBlue Total FX",desc:"Conjunto de títulos, transições e efeitos de vídeo.",featured:false,badge:"",
-        perp:{price:"$799",term:"único"}, sub:{price:"$24",term:"/mês, cobrado anualmente"},
-        features:["Títulos e geradores de caracteres","Transições e efeitos","Plugin para as principais NLEs: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]},
-      {name:"NewBlue Newsroom",desc:"Ecossistema completo de gráficos de redação, dimensionado para a sua emissora.",featured:false,badge:"",
+        features:["Gráficos em tempo real orientados a dados","Motor e aplicativo de controle autossuficientes","Templates incluídos"]},
+      {name:"NewBlue Captivate Enterprise",logo:"images/logo-enterprise.png",desc:"O Captivate com automação, controle imersivo e operação via web.",featured:true,badge:"Mais popular",
+        perp:{price:"$14,999",term:"único"}, sub:{price:"$650",term:"/mês, cobrado anualmente"},
+        features:["Tudo do Captivate","Automação e controles orientados a dados","Controla telas de estúdio, video walls e transmissão imersiva","Aplicativo de controle via web","Suporte prioritário"]},
+      {name:"NewBlue Newsroom",logo:"images/logo-newsroom.png",desc:"Ecossistema completo de gráficos de redação, dimensionado para a sua emissora.",featured:false,badge:"",
         perp:{price:"Sob consulta",term:"implantação sob medida"}, sub:{price:"Sob consulta",term:"implantação sob medida"},
-        features:["Integração NRCS / MOS","Multicanal e multioperador","Suporte empresarial e SLA"]}
+        features:["Integração NRCS / MOS","Multicanal e multioperador","Suporte empresarial e SLA"]},
+      {name:"NewBlue Total FX",logo:"images/logo-totalfx.png",desc:"Conjunto de títulos, transições e efeitos de vídeo.",featured:false,badge:"",
+        perp:{price:"$799",term:"único"}, sub:{price:"$24",term:"/mês, cobrado anualmente"},
+        features:["Títulos e geradores de caracteres","Transições e efeitos","Plugin para as principais NLEs: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]}
     ],
     hardware:[
-      {name:"Fusion NDI",desc:"Gráficos no ar turnkey — I/O NDI.",price:"$11,995",term:"único",features:["Hardware + software turnkey","Entrada/saída NDI","Pronto para o ar"]},
-      {name:"Fusion SDI",desc:"Gráficos no ar turnkey — I/O SDI.",price:"$14,995",term:"único",features:["Hardware + software turnkey","Entrada/saída SDI","Pronto para o ar"]},
-      {name:"Fusion 2110",desc:"Gráficos no ar turnkey — ST 2110 IP.",price:"$15,995",term:"único",features:["Hardware + software turnkey","ST 2110 IP","Pronto para o ar"]},
-      {name:"Fusion Extreme 4K SDI",desc:"Gráficos no ar turnkey em 4K — I/O SDI.",price:"$18,995",term:"único",features:["4K / UHD","Entrada/saída SDI","Motor de alto desempenho"]},
-      {name:"Fusion Extreme 4K 2110",desc:"Gráficos no ar turnkey em 4K — ST 2110 IP.",price:"$19,495",term:"único",features:["4K / UHD","ST 2110 IP","Motor de alto desempenho"]}
+      {name:"Fusion NDI",logo:"images/logo-fusion.png",desc:"Gráficos no ar turnkey — I/O NDI.",price:"$11,995",term:"único",features:["Hardware + software turnkey","Entrada/saída NDI","Pronto para o ar"]},
+      {name:"Fusion SDI",logo:"images/logo-fusion.png",desc:"Gráficos no ar turnkey — I/O SDI.",price:"$14,995",term:"único",features:["Hardware + software turnkey","Entrada/saída SDI","Pronto para o ar"]},
+      {name:"Fusion 2110",logo:"images/logo-fusion.png",desc:"Gráficos no ar turnkey — ST 2110 IP.",price:"$15,995",term:"único",features:["Hardware + software turnkey","ST 2110 IP","Pronto para o ar"]},
+      {name:"Fusion Extreme 4K SDI",logo:"images/logo-fusion.png",desc:"Gráficos no ar turnkey em 4K — I/O SDI.",price:"$18,995",term:"único",features:["4K / UHD","Entrada/saída SDI","Motor de alto desempenho"]},
+      {name:"Fusion Extreme 4K 2110",logo:"images/logo-fusion.png",desc:"Gráficos no ar turnkey em 4K — ST 2110 IP.",price:"$19,495",term:"único",features:["4K / UHD","ST 2110 IP","Motor de alto desempenho"]},
+      {name:"Upgrade para Enterprise",logo:"images/logo-enterprise.png",accent:"purple",desc:"Atualize a licença do Captivate incluída em qualquer Fusion para o Captivate Enterprise.",price:"$4,999",term:"upgrade de licença",features:["Licença Captivate → Captivate Enterprise","Adiciona automação e controles de dados","Telas de estúdio, video walls e transmissão imersiva","Aplicativo de controle via web"]}
     ],
     note:"Preços em USD. A assinatura mostra o preço mensal, cobrado anualmente. O NewBlue Newsroom é orçado por implantação. Preços por volume e regionais disponíveis sob consulta."
   },
@@ -718,22 +732,26 @@ CONTENT.es = {
     subNote:"Precio mensual, facturado anualmente.",
     cta:"Contactar ventas",
     software:[
-      {name:"NewBlue Captivate",desc:"Plataforma insignia de gráficos de broadcast en tiempo real y basada en datos.",featured:true,badge:"Más popular",
+      {name:"NewBlue Captivate",logo:"images/logo-captivate.png",desc:"Plataforma insignia de gráficos de broadcast en tiempo real y basada en datos.",featured:false,badge:"",
         perp:{price:"$4,999",term:"único"}, sub:{price:"$166",term:"/mes, facturado anualmente"},
-        features:["Gráficos en tiempo real basados en datos","Control en vivo y automatización","Plantillas incluidas"]},
-      {name:"NewBlue Total FX",desc:"Conjunto de títulos, transiciones y efectos de video.",featured:false,badge:"",
-        perp:{price:"$799",term:"único"}, sub:{price:"$24",term:"/mes, facturado anualmente"},
-        features:["Títulos y rótulos","Transiciones y efectos","Complemento para las principales NLE: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]},
-      {name:"NewBlue Newsroom",desc:"Ecosistema completo de gráficos de redacción, dimensionado a tu planta.",featured:false,badge:"",
+        features:["Gráficos en tiempo real basados en datos","Motor y aplicación de control autónomos","Plantillas incluidas"]},
+      {name:"NewBlue Captivate Enterprise",logo:"images/logo-enterprise.png",desc:"Captivate con automatización, control inmersivo y operación vía web.",featured:true,badge:"Más popular",
+        perp:{price:"$14,999",term:"único"}, sub:{price:"$650",term:"/mes, facturado anualmente"},
+        features:["Todo lo de Captivate","Automatización y controles basados en datos","Controla pantallas de estudio, video walls y transmisión inmersiva","Aplicación de control vía web","Soporte prioritario"]},
+      {name:"NewBlue Newsroom",logo:"images/logo-newsroom.png",desc:"Ecosistema completo de gráficos de redacción, dimensionado a tu planta.",featured:false,badge:"",
         perp:{price:"A consultar",term:"implementación a medida"}, sub:{price:"A consultar",term:"implementación a medida"},
-        features:["Integración NRCS / MOS","Multicanal y multioperador","Soporte empresarial y SLA"]}
+        features:["Integración NRCS / MOS","Multicanal y multioperador","Soporte empresarial y SLA"]},
+      {name:"NewBlue Total FX",logo:"images/logo-totalfx.png",desc:"Conjunto de títulos, transiciones y efectos de video.",featured:false,badge:"",
+        perp:{price:"$799",term:"único"}, sub:{price:"$24",term:"/mes, facturado anualmente"},
+        features:["Títulos y rótulos","Transiciones y efectos","Complemento para las principales NLE: Adobe Premiere, DaVinci Resolve, Adobe After Effects, Grass Valley Edius, Avid Media Composer"]}
     ],
     hardware:[
-      {name:"Fusion NDI",desc:"Gráficos al aire llave en mano — E/S NDI.",price:"$11,995",term:"único",features:["Hardware + software llave en mano","Entrada/salida NDI","Listo al aire"]},
-      {name:"Fusion SDI",desc:"Gráficos al aire llave en mano — E/S SDI.",price:"$14,995",term:"único",features:["Hardware + software llave en mano","Entrada/salida SDI","Listo al aire"]},
-      {name:"Fusion 2110",desc:"Gráficos al aire llave en mano — ST 2110 IP.",price:"$15,995",term:"único",features:["Hardware + software llave en mano","ST 2110 IP","Listo al aire"]},
-      {name:"Fusion Extreme 4K SDI",desc:"Gráficos al aire llave en mano en 4K — E/S SDI.",price:"$18,995",term:"único",features:["4K / UHD","Entrada/salida SDI","Motor de alto rendimiento"]},
-      {name:"Fusion Extreme 4K 2110",desc:"Gráficos al aire llave en mano en 4K — ST 2110 IP.",price:"$19,495",term:"único",features:["4K / UHD","ST 2110 IP","Motor de alto rendimiento"]}
+      {name:"Fusion NDI",logo:"images/logo-fusion.png",desc:"Gráficos al aire llave en mano — E/S NDI.",price:"$11,995",term:"único",features:["Hardware + software llave en mano","Entrada/salida NDI","Listo al aire"]},
+      {name:"Fusion SDI",logo:"images/logo-fusion.png",desc:"Gráficos al aire llave en mano — E/S SDI.",price:"$14,995",term:"único",features:["Hardware + software llave en mano","Entrada/salida SDI","Listo al aire"]},
+      {name:"Fusion 2110",logo:"images/logo-fusion.png",desc:"Gráficos al aire llave en mano — ST 2110 IP.",price:"$15,995",term:"único",features:["Hardware + software llave en mano","ST 2110 IP","Listo al aire"]},
+      {name:"Fusion Extreme 4K SDI",logo:"images/logo-fusion.png",desc:"Gráficos al aire llave en mano en 4K — E/S SDI.",price:"$18,995",term:"único",features:["4K / UHD","Entrada/salida SDI","Motor de alto rendimiento"]},
+      {name:"Fusion Extreme 4K 2110",logo:"images/logo-fusion.png",desc:"Gráficos al aire llave en mano en 4K — ST 2110 IP.",price:"$19,495",term:"único",features:["4K / UHD","ST 2110 IP","Motor de alto rendimiento"]},
+      {name:"Actualizar a Enterprise",logo:"images/logo-enterprise.png",accent:"purple",desc:"Actualiza la licencia de Captivate incluida en cualquier Fusion a Captivate Enterprise.",price:"$4,999",term:"actualización de licencia",features:["Licencia Captivate → Captivate Enterprise","Agrega automatización y controles de datos","Pantallas de estudio, video walls y transmisión inmersiva","Aplicación de control vía web"]}
     ],
     note:"Precios en USD. La suscripción muestra el precio mensual, facturado anualmente. NewBlue Newsroom se cotiza por implementación. Precios por volumen y regionales disponibles a pedido."
   },
@@ -1121,20 +1139,22 @@ function renderArch(c){
 function renderPricing(c){
   const m = priceModel;
   const swCard=t=>{const p=t[m];return `<div class="price ${t.featured?'feat':''}" ${t.featured?`data-badge="${t.badge}"`:''}>
-      <h3 style="font-size:22px">${t.name}</h3>
+      ${t.logo?`<div class="price-logo"><img src="${t.logo}" alt=""></div>`:''}
+      <h3 style="font-size:22px;padding-right:44px">${t.name}</h3>
       <div class="tag" style="margin:6px 0 4px">${t.desc}</div>
       <div class="amt">${p.price} <small>${p.term}</small></div>
       <ul>${t.features.map(f=>`<li>${f}</li>`).join("")}</ul>
       <button class="btn ${t.featured?'':'ghost'}" style="width:100%;justify-content:center" onclick="go('contact')">${c.cta}</button>
     </div>`;};
-  const hwCard=t=>`<div class="price">
-      <img class="hw-img" src="images/fusion.png" alt="NewBlue Fusion appliance">
-      <h3 style="font-size:20px">${t.name}</h3>
+  const hwCard=t=>{const up=t.accent==='purple';return `<div class="price${up?' upgrade':''}">
+      ${up?'':`<img class="hw-img" src="images/fusion.png" alt="NewBlue Fusion appliance">`}
+      ${t.logo?`<div class="price-logo"><img src="${t.logo}" alt=""></div>`:''}
+      <h3 style="font-size:20px;padding-right:44px">${t.name}</h3>
       <div class="tag" style="margin:6px 0 4px">${t.desc}</div>
       <div class="amt">${t.price} <small>${t.term}</small></div>
-      <ul>${c.hwIncludeBullets.map(f=>`<li class="incl">${f}</li>`).join("")}${t.features.map(f=>`<li>${f}</li>`).join("")}</ul>
-      <button class="btn ghost" style="width:100%;justify-content:center" onclick="go('contact')">${c.cta}</button>
-    </div>`;
+      <ul>${up?'':c.hwIncludeBullets.map(f=>`<li class="incl">${f}</li>`).join("")}${t.features.map(f=>`<li>${f}</li>`).join("")}</ul>
+      <button class="btn ${up?'':'ghost'}" style="width:100%;justify-content:center" onclick="go('contact')">${c.cta}</button>
+    </div>`;};
   return `<div class="eyebrow">${c.eyebrow}</div><h1>${c.h1}</h1><p class="lead">${c.lead}</p>
 
   <div class="section"><h2>${c.swHeading}</h2><p class="lead" style="font-size:15px;margin-top:2px">${c.swSub}</p></div>
