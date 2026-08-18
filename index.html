@@ -1261,5 +1261,13 @@ window.addEventListener('hashchange',()=>{
 page = PAGES.includes(location.hash.slice(1)) ? location.hash.slice(1) : "home";
 draw();
 </script>
+<script>
+  /* Offline cache: works only over http/https (ignored on file://). */
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
+</script>
 </body>
 </html>
